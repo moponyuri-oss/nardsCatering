@@ -586,12 +586,13 @@
 // ============================================================
 let _notifTodayData    = [];
 let _notifUpcomingData = [];
+const API = 'http://localhost:3000'; // Change this to your actual backend URL
 
 async function loadEventNotifications() {
   try {
     const [todayRes, upcomingRes] = await Promise.all([
-      fetch('http://localhost:3000/bookings/today'),
-      fetch('http://localhost:3000/bookings/upcoming')
+      fetch(`${API}/bookings/today`),
+      fetch(`${API}/bookings/upcoming`)
     ]);
     _notifTodayData    = todayRes.ok    ? await todayRes.json()    : [];
     _notifUpcomingData = upcomingRes.ok ? await upcomingRes.json() : [];
@@ -764,7 +765,7 @@ let restockIdx = -1;
 // ============================================================
 async function syncFromAPI() {
   try {
-    const res = await fetch('http://localhost:3000/bookings');
+    const res = await fetch(`${API}/bookings`);
     if (!res.ok) return;
     const rows = await res.json();
     let changed = false;
@@ -851,7 +852,7 @@ async function openBookingModal(idx) {
 
   // Populate event types from DB
   try {
-    const etRes = await fetch('http://localhost:3000/bookings/eventtypes');
+    const etRes = await fetch(`${API}/bookings/eventtypes`);
     if (etRes.ok) {
       const types = await etRes.json();
       document.getElementById('bk-event').innerHTML =
@@ -910,7 +911,7 @@ async function openMenuModal(packageId) {
   await fetchDishes();
   if (packageId) {
     try {
-      const res = await fetch(`http://localhost:3000/packages/${packageId}`);
+      const res = await fetch(`${API}/packages/${packageId}`);
       if (res.ok) {
         const pkg = await res.json();
         document.getElementById('mn-name').value  = pkg.name;
@@ -968,7 +969,7 @@ async function saveBooking() {
     const dbId = booking.id.replace('DB-', '');
     try {
       // Update full booking record
-      await fetch(`http://localhost:3000/bookings/${dbId}`, {
+      await fetch(`${API}/bookings/${dbId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -984,7 +985,7 @@ async function saveBooking() {
         })
       });
       // Sync status separately via PATCH
-      await fetch(`http://localhost:3000/bookings/${dbId}/status`, {
+      await fetch(`${API}/bookings/${dbId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: booking.status.toLowerCase() })
@@ -1068,7 +1069,7 @@ async function saveMenu() {
   }
   const body = { name, price: parseFloat(price), min_guests: parseInt(minGuests) || 0, assets, dishes, freebies };
   try {
-    const url    = editPackageId ? `http://localhost:3000/packages/${editPackageId}` : 'http://localhost:3000/packages';
+    const url    = editPackageId ? `${API}/packages/${editPackageId}` : `${API}/packages`;
     const method = editPackageId ? 'PUT' : 'POST';
     const res    = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     if (!res.ok) { const e = await res.json(); notify(e.error || 'Error saving', '❌'); return; }
@@ -1199,7 +1200,7 @@ function renderBookings() {
 async function renderMenuCards() {
   const el = document.getElementById('menu-cards');
   try {
-    const res = await fetch('http://localhost:3000/packages');
+    const res = await fetch(`${API}/packages`);
     if (!res.ok) throw new Error();
     const packages = await res.json();
     el.innerHTML = packages.length
@@ -1407,7 +1408,7 @@ function renderTodayEventsWidget(todayEvts) {
 async function renderUpcomingEventsWidget() {
   const el = document.getElementById('dash-upcoming-events');
   try {
-    const res = await fetch('http://localhost:3000/bookings/upcoming');
+    const res = await fetch(`${API}/bookings/upcoming`);
     if (!res.ok) throw new Error();
     const rows = await res.json();
     const filteredRows = rows.filter(r => r.status !== 'completed' && r.status !== 'Completed');
@@ -1457,7 +1458,7 @@ async function renderStatusSummary() {
   const el = document.getElementById('dash-status-summary');
   const statusColors = { pending:'badge-warning', confirmed:'badge-success', completed:'badge-info', cancelled:'badge-danger' };
   try {
-    const res = await fetch('http://localhost:3000/bookings/summary');
+    const res = await fetch(`${API}/bookings/summary`);
     if (!res.ok) throw new Error();
     const rows = await res.json();
     const total = rows.reduce((s,r) => s + Number(r.count), 0);
@@ -1572,7 +1573,7 @@ async function deleteBooking(idx) {
   if (booking.id && booking.id.startsWith('DB-')) {
     const dbId = booking.id.replace('DB-', '');
     try {
-      const res = await fetch('http://localhost:3000/bookings/' + dbId, { method: 'DELETE' });
+      const res = await fetch(`${API}/bookings/${dbId}`, { method: 'DELETE' });
       if (!res.ok) { notify('Failed to delete from database', '❌'); return; }
     } catch(e) {
       notify('Server not connected — cannot delete', '❌'); return;
@@ -1587,7 +1588,7 @@ async function removeDashBooking(bookingId) {
   if (bookingId && bookingId.startsWith('DB-')) {
     if (!data.deletedBookingIds.includes(bookingId)) data.deletedBookingIds.push(bookingId);
     const dbId = bookingId.replace('DB-', '');
-    try { await fetch('http://localhost:3000/bookings/' + dbId, { method: 'DELETE' }); } catch(e) {}
+    try { await fetch(`${API}/bookings/${dbId}`, { method: 'DELETE' }); } catch(e) {}
   }
   data.bookings = data.bookings.filter(b => b.id !== bookingId);
   saveData(); renderDashboard(); notify('Booking removed', '🗑️');
@@ -1599,7 +1600,7 @@ function deleteIngredient(idx) {
 async function deleteMenu(id) {
   if (!confirm('Delete this package?')) return;
   try {
-    const res = await fetch(`http://localhost:3000/packages/${id}`, { method: 'DELETE' });
+    const res = await fetch(`${API}/packages/${id}`, { method: 'DELETE' });
     if (!res.ok) { notify('Failed to delete', '❌'); return; }
     renderMenuCards();
     notify('Package deleted', '🗑️');
@@ -1618,7 +1619,7 @@ async function deleteClient(id) {
         if (!data.deletedBookingIds.includes(b.id)) data.deletedBookingIds.push(b.id);
         const dbId = b.id.replace('DB-', '');
         try {
-          await fetch('http://localhost:3000/bookings/' + dbId, { method: 'DELETE' });
+          await fetch(`${API}/bookings/${dbId}`, { method: 'DELETE' });
         } catch(e) { /* server offline — continue */ }
       }
     }
@@ -1640,14 +1641,14 @@ let editDishId    = null;
 
 async function fetchAssets() {
   try {
-    const res = await fetch('http://localhost:3000/assets');
+    const res = await fetch(`${API}/assets`);
     if (res.ok) assetsList = await res.json();
   } catch(e) { assetsList = []; }
 }
 
 async function fetchPackages() {
   try {
-    const res = await fetch('http://localhost:3000/packages');
+    const res = await fetch(`${API}/packages`);
     if (res.ok) packagesList = await res.json();
   } catch(e) { packagesList = []; }
 }
@@ -1686,7 +1687,7 @@ async function saveAsset() {
   if (!name || quantity === '') { notify('Fill required fields', '⚠️'); return; }
   const body = { name, quantity: parseInt(quantity), unit };
   try {
-    const url    = editAssetId ? `http://localhost:3000/assets/${editAssetId}` : 'http://localhost:3000/assets';
+    const url    = editAssetId ? `${API}/assets/${editAssetId}` : `${API}/assets`;
     const method = editAssetId ? 'PUT' : 'POST';
     const res    = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     if (!res.ok) { const e = await res.json(); notify(e.error || 'Error saving', '❌'); return; }
@@ -1699,7 +1700,7 @@ async function saveAsset() {
 async function deleteAsset(id) {
   if (!confirm('Delete this asset?')) return;
   try {
-    const res = await fetch(`http://localhost:3000/assets/${id}`, { method: 'DELETE' });
+    const res = await fetch(`${API}/assets/${id}`, { method: 'DELETE' });
     if (!res.ok) { notify('Failed to delete', '❌'); return; }
     renderAssets();
     notify('Asset deleted', '🗑️');
@@ -1766,7 +1767,7 @@ function updateAssetEmptyMsg() {
 // ============================================================
 async function fetchDishes() {
   try {
-    const res = await fetch('http://localhost:3000/dishes');
+    const res = await fetch(`${API}/dishes`);
     if (res.ok) dishesList = await res.json();
   } catch(e) { dishesList = []; }
 }
@@ -1802,7 +1803,7 @@ async function saveDish() {
   if (!name) { notify('Dish name is required', '⚠️'); return; }
   const body = { name, category };
   try {
-    const url    = editDishId ? `http://localhost:3000/dishes/${editDishId}` : 'http://localhost:3000/dishes';
+    const url    = editDishId ? `${API}/dishes/${editDishId}` : `${API}/dishes`;
     const method = editDishId ? 'PUT' : 'POST';
     const res    = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     if (!res.ok) { const e = await res.json(); notify(e.error || 'Error saving', '❌'); return; }
@@ -1815,7 +1816,7 @@ async function saveDish() {
 async function deleteDish(id) {
   if (!confirm('Delete this dish? It will be removed from all packages.')) return;
   try {
-    const res = await fetch(`http://localhost:3000/dishes/${id}`, { method: 'DELETE' });
+    const res = await fetch(`${API}/dishes/${id}`, { method: 'DELETE' });
     if (!res.ok) { notify('Failed to delete', '❌'); return; }
     renderDishes();
     notify('Dish deleted', '🗑️');
@@ -2030,7 +2031,7 @@ async function calMarkDone(idx) {
   if (booking.id && booking.id.startsWith('DB-')) {
     const dbId = booking.id.replace('DB-', '');
     try {
-      const res = await fetch(`http://localhost:3000/bookings/${dbId}/status`, {
+      const res = await fetch(`${API}/bookings/${dbId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'completed' })
