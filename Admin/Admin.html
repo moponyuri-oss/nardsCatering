@@ -1,0 +1,2080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nards Catering — Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="Admin.css">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-title">NARDS</div>
+    <div class="logo-sub">Catering</div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-label">Main</div>
+    <button class="nav-item active" onclick="navigate('dashboard')"><span class="icon">🏠</span> Dashboard</button>
+    <button class="nav-item" onclick="navigate('bookings')"><span class="icon">📋</span> Bookings</button>
+    <button class="nav-item" onclick="navigate('calendar')"><span class="icon">📅</span> Calendar</button>
+    <div class="nav-label">Operations</div>
+    <button class="nav-item" onclick="navigate('inventory')"><span class="icon">🧂</span> Inventory</button>
+    <button class="nav-item" onclick="navigate('menu')"><span class="icon">🍽️</span> Menu Packages</button>
+    <button class="nav-item" onclick="navigate('assets')"><span class="icon">🪑</span> Catering Assets</button>
+    <button class="nav-item" onclick="navigate('dishes')"><span class="icon">🍜</span> Dishes</button>
+    <div class="nav-label">Business</div>
+    <button class="nav-item" onclick="navigate('clients')"><span class="icon">👥</span> Client Records</button>
+    <button class="nav-item" onclick="navigate('reports')"><span class="icon">📊</span> Reports</button>
+  </div>
+  <div class="sidebar-footer">© 2026 Nards Catering</div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="page-title" id="pageTitle">Dashboard</div>
+    <div class="topbar-actions">
+      <button class="btn btn-outline btn-sm" onclick="navigate('bookings'); openBookingModal()">+ New Booking</button>
+      <button class="btn btn-primary btn-sm" onclick="navigate('inventory'); openIngredientModal()">+ Add Ingredient</button>
+      <!-- Notification Bell -->
+      <button class="btn-notif-bell" id="notif-bell-btn" onclick="openEventNotifications()" title="Event Notifications">
+        🔔 <span class="notif-bell-dot" id="notif-bell-dot" style="display:none"></span>
+      </button>
+      <!-- FIX: Logout button clears session -->
+      <button class="btn-logout" onclick="logout()">🔓 Logout</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="view active" id="view-dashboard">
+
+      <!-- EVENT ALERT BANNER (today's confirmed events) -->
+      <div id="event-alert-banner" style="display:none" class="event-alert-banner"></div>
+
+      <!-- STATS GRID — original + new event stats -->
+      <div class="stats-grid stats-grid-6">
+        <div class="stat-card stat-accent">
+          <div class="stat-label">Total Bookings</div>
+          <div class="stat-value" id="stat-bookings">0</div>
+          <div class="stat-sub">All time</div>
+        </div>
+        <div class="stat-card stat-accent">
+          <div class="stat-label">This Month Revenue</div>
+          <div class="stat-value" id="stat-revenue">₱0</div>
+          <div class="stat-sub">Confirmed events</div>
+        </div>
+        <div class="stat-card stat-accent">
+          <div class="stat-label">Low Stock Items</div>
+          <div class="stat-value" id="stat-lowstock">0</div>
+          <div class="stat-sub">Need restocking</div>
+        </div>
+        <div class="stat-card stat-accent stat-today" onclick="navigate('calendar')">
+          <div class="stat-label">Today's Events</div>
+          <div class="stat-value" id="stat-today">0</div>
+          <div class="stat-sub">Confirmed today</div>
+        </div>
+        <div class="stat-card stat-accent stat-upcoming-card" onclick="navigate('calendar')">
+          <div class="stat-label">Upcoming Events</div>
+          <div class="stat-value" id="stat-upcoming">0</div>
+          <div class="stat-sub">Next 30 days</div>
+        </div>
+        <div class="stat-card stat-accent">
+          <div class="stat-label">Pending Bookings</div>
+          <div class="stat-value" id="stat-pending">0</div>
+          <div class="stat-sub">Awaiting confirmation</div>
+        </div>
+      </div>
+
+      <!-- EVENT STATUS SUMMARY WIDGET -->
+      <div class="dash-grid-3">
+        <div class="card">
+          <div class="card-title">📋 Recent Bookings</div>
+          <div class="recent-list" id="dash-recent-bookings">
+            <div class="empty-state"><div class="empty-icon">📋</div><p>No bookings yet</p></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">📅 Today's Confirmed Events</div>
+          <div class="recent-list" id="dash-today-events">
+            <div class="empty-state"><div class="empty-icon">📅</div><p>No events scheduled today</p></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">🔔 Upcoming Confirmed Events</div>
+          <div class="recent-list" id="dash-upcoming-events">
+            <div class="empty-state"><div class="empty-icon">🔔</div><p>No upcoming events</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-grid" style="margin-top:20px">
+        <div class="card">
+          <div class="card-title">📊 Event Status Summary</div>
+          <div id="dash-status-summary" class="recent-list">
+            <div class="empty-state"><div class="empty-icon">📊</div><p>Loading...</p></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">🚨 Low Stock Alerts</div>
+          <div class="recent-list" id="dash-low-stock">
+            <div class="empty-state"><div class="empty-icon">✅</div><p>All ingredients well stocked</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOOKINGS -->
+    <div class="view" id="view-bookings">
+      <div class="section-header">
+        <h2>Booking Management</h2>
+        <button class="btn btn-primary" onclick="openBookingModal()">+ New Booking</button>
+      </div>
+      <div class="search-bar">
+        <input type="text" id="booking-search" placeholder="Search by client name or event..." oninput="renderBookings()">
+        <select id="booking-filter" onchange="renderBookings()">
+          <option value="">All Status</option>
+          <option value="Pending">Pending</option>
+          <option value="Confirmed">Confirmed</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Booking ID</th><th>Client</th><th>Event Type</th><th>Date</th><th>Guests</th><th>Package</th><th>Total</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="bookings-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- INVENTORY -->
+    <div class="view" id="view-inventory">
+      <div class="section-header">
+        <h2>Ingredient Inventory</h2>
+        <button class="btn btn-primary" onclick="openIngredientModal()">+ Add Ingredient</button>
+      </div>
+      <div id="inv-alerts"></div>
+      <div class="search-bar">
+        <input type="text" id="inv-search" placeholder="Search ingredients..." oninput="renderInventory()">
+        <select id="inv-filter" onchange="renderInventory()">
+          <option value="">All Status</option>
+          <option value="good">Good Stock</option>
+          <option value="low">Low Stock</option>
+          <option value="critical">Critical</option>
+        </select>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Ingredient</th><th>Category</th><th>Current Stock</th><th>Unit</th><th>Min Required</th><th>Stock Level</th><th>Status</th><th>Last Updated</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="inventory-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- MENU -->
+    <div class="view" id="view-menu">
+      <div class="section-header">
+        <h2>Menu Packages</h2>
+        <button class="btn btn-primary" onclick="openMenuModal()">+ Add Package</button>
+      </div>
+      <div id="menu-cards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;"></div>
+    </div>
+
+    <!-- ASSETS -->
+    <div class="view" id="view-assets">
+      <div class="section-header">
+        <h2>Catering Assets</h2>
+        <button class="btn btn-primary" onclick="openAssetModal()">+ Add Asset</button>
+      </div>
+      <div class="search-bar">
+        <input type="text" id="asset-search" placeholder="Search assets..." oninput="renderAssets()">
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Asset Name</th><th>Quantity</th><th>Unit</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="assets-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- DISHES -->
+    <div class="view" id="view-dishes">
+      <div class="section-header">
+        <h2>Dish Management</h2>
+        <button class="btn btn-primary" onclick="openDishModal()">+ Add Dish</button>
+      </div>
+      <div class="search-bar">
+        <input type="text" id="dish-search" placeholder="Search dishes..." oninput="renderDishes()">
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Dish Name</th><th>Category</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="dishes-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLIENTS -->
+    <div class="view" id="view-clients">
+      <div class="section-header">
+        <h2>Client Records</h2>
+        <button class="btn btn-primary" onclick="openClientModal()">+ Add Client</button>
+      </div>
+      <div class="search-bar">
+        <input type="text" id="client-search" placeholder="Search clients..." oninput="renderClients()">
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Client</th><th>Phone</th><th>Email</th><th>Completed Events</th><th>Total Paid</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="clients-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALENDAR -->
+    <div class="view" id="view-calendar">
+      <div class="section-header">
+        <h2>Booking Calendar</h2>
+      </div>
+      <div class="cal-layout">
+        <!-- Month navigator -->
+        <div class="cal-card">
+          <div class="cal-nav">
+            <button class="btn btn-outline btn-sm" onclick="calPrevMonth()">&lsaquo;</button>
+            <span id="cal-month-label" style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--dark)"></span>
+            <button class="btn btn-outline btn-sm" onclick="calNextMonth()">&rsaquo;</button>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+          <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+            <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text)"><span class="cal-dot dot-confirmed" style="width:10px;height:10px"></span>Confirmed</span>
+            <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text)"><span class="cal-dot dot-pending"   style="width:10px;height:10px"></span>Pending</span>
+            <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text)"><span class="cal-dot dot-completed" style="width:10px;height:10px"></span>Completed</span>
+          </div>
+        </div>
+        <!-- Day detail panel -->
+        <div class="card" id="cal-detail" style="min-width:280px;max-width:340px">
+          <div class="card-title" id="cal-detail-title" style="font-size:15px">Select a date</div>
+          <div id="cal-detail-list"><p style="font-size:13px;color:var(--text-muted)">Click any date with a dot to see bookings.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPORTS -->
+    <div class="view" id="view-reports">
+      <div class="section-header"><h2>Business Reports</h2></div>
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-card stat-accent"><div class="stat-label">Total Revenue</div><div class="stat-value" id="rep-total-rev">₱0</div></div>
+        <div class="stat-card stat-accent"><div class="stat-label">Completed Events</div><div class="stat-value" id="rep-completed">0</div></div>
+        <div class="stat-card stat-accent"><div class="stat-label">Avg. Per Event</div><div class="stat-value" id="rep-avg">₱0</div></div>
+      </div>
+      <div class="dash-grid" style="margin-top:0">
+        <div class="card"><div class="card-title">📈 Bookings by Event Type</div><div id="rep-by-type"></div></div>
+        <div class="card"><div class="card-title">📦 Stock Summary</div><div id="rep-stock"></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     EVENT NOTIFICATION POPUP (today's + upcoming confirmed events)
+============================================================ -->
+<div class="modal-overlay" id="event-notification-modal">
+  <div class="modal event-notif-modal" style="width:580px;max-width:95vw">
+    <div class="modal-title">
+      <span>🗓️ Event Notifications</span>
+      <button class="modal-close" onclick="closeModal('event-notification-modal')">✕</button>
+    </div>
+
+    <!-- Today section -->
+    <div id="notif-today-section">
+      <div class="notif-section-header notif-today-hdr">
+        <span class="notif-section-icon">📅</span>
+        <span>Today's Events</span>
+        <span class="notif-badge" id="notif-today-count">0</span>
+      </div>
+      <div id="notif-today-list" class="notif-event-list">
+        <div class="notif-empty">No confirmed events today.</div>
+      </div>
+    </div>
+
+    <!-- Upcoming section -->
+    <div id="notif-upcoming-section" style="margin-top:20px">
+      <div class="notif-section-header notif-upcoming-hdr">
+        <span class="notif-section-icon">🔔</span>
+        <span>Upcoming Events (Next 30 Days)</span>
+        <span class="notif-badge notif-badge-upcoming" id="notif-upcoming-count">0</span>
+      </div>
+      <div id="notif-upcoming-list" class="notif-event-list">
+        <div class="notif-empty">No upcoming confirmed events.</div>
+      </div>
+    </div>
+
+    <div class="modal-actions" style="margin-top:24px">
+      <button class="btn btn-outline" onclick="closeModal('event-notification-modal')">Dismiss</button>
+      <button class="btn btn-primary" onclick="closeModal('event-notification-modal');navigate('bookings')">View All Bookings</button>
+    </div>
+  </div>
+</div>
+
+<!-- BOOKING MODAL -->
+<div class="modal-overlay" id="booking-modal">
+  <div class="modal">
+    <div class="modal-title">
+      <span id="booking-modal-title">New Booking</span>
+      <button class="modal-close" onclick="closeModal('booking-modal')">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Client Name *</label><input id="bk-client" type="text" placeholder="Juan dela Cruz"></div>
+      <div class="form-group"><label>Contact Number *</label><input id="bk-phone" type="tel" placeholder="+63 912 345 6789"></div>
+      <div class="form-group"><label>Email</label><input id="bk-email" type="email" placeholder="juan@email.com"></div>
+      <div class="form-group"><label>Event Type *</label>
+        <select id="bk-event">
+          <option value="">Select event...</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Event Date *</label><input id="bk-date" type="date"></div>
+      <div class="form-group"><label>Event Time</label><input id="bk-time" type="time"></div>
+      <div class="form-group"><label>Number of Guests *</label><input id="bk-guests" type="number" min="1" placeholder="100"></div>
+      <div class="form-group"><label>Package</label><select id="bk-package"><option value="">Select package...</option></select></div>
+      <div class="form-group"><label>Venue</label><input id="bk-venue" type="text" placeholder="Event venue address"></div>
+      <div class="form-group"><label>Total Amount (₱) *</label><input id="bk-amount" type="number" min="0" placeholder="25000"></div>
+      <div class="form-group"><label>Down Payment (₱)</label><input id="bk-dp" type="number" min="0" placeholder="5000"></div>
+      <div class="form-group"><label>Status</label>
+        <select id="bk-status"><option>Pending</option><option>Confirmed</option><option>Completed</option><option>Cancelled</option></select>
+      </div>
+      <div class="form-group full"><label>Special Notes</label><textarea id="bk-notes" placeholder="Dietary restrictions, special requests, etc."></textarea></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('booking-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveBooking()">Save Booking</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal" style="width:620px">
+    <div class="modal-title">
+      <span>Booking Confirmation</span>
+      <button class="modal-close" onclick="closeModal('confirm-modal')">✕</button>
+    </div>
+    <div class="booking-steps">
+      <div class="bs-step done"><div class="bs-dot">✓</div>Details</div>
+      <div class="bs-step done"><div class="bs-dot">✓</div>Package</div>
+      <div class="bs-step active"><div class="bs-dot">3</div>Confirmed</div>
+    </div>
+    <div class="confirm-box" id="confirm-box-content"></div>
+    <div class="modal-actions" style="margin-top:20px">
+      <button class="btn btn-outline" onclick="closeModal('confirm-modal')">Close</button>
+      <button class="btn btn-primary" onclick="window.print()">🖨️ Print / Save PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- INGREDIENT MODAL -->
+<div class="modal-overlay" id="ingredient-modal">
+  <div class="modal" style="width:480px">
+    <div class="modal-title">
+      <span id="ing-modal-title">Add Ingredient</span>
+      <button class="modal-close" onclick="closeModal('ingredient-modal')">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Ingredient Name *</label><input id="ing-name" type="text" placeholder="e.g. Chicken Breast"></div>
+      <div class="form-group"><label>Category</label>
+        <select id="ing-cat">
+          <option>Meat & Poultry</option><option>Seafood</option><option>Vegetables</option>
+          <option>Dairy</option><option>Grains & Rice</option><option>Spices & Condiments</option>
+          <option>Beverages</option><option>Other</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Current Stock *</label><input id="ing-stock" type="number" min="0" placeholder="50"></div>
+      <div class="form-group"><label>Unit</label>
+        <select id="ing-unit"><option>kg</option><option>g</option><option>L</option><option>mL</option><option>pcs</option><option>sacks</option><option>boxes</option><option>cans</option></select>
+      </div>
+      <div class="form-group"><label>Minimum Required *</label><input id="ing-min" type="number" min="0" placeholder="10"></div>
+      <div class="form-group"><label>Good Stock Level</label><input id="ing-good" type="number" min="0" placeholder="50"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('ingredient-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveIngredient()">Save Ingredient</button>
+    </div>
+  </div>
+</div>
+
+<!-- MENU MODAL -->
+<div class="modal-overlay" id="menu-modal">
+  <div class="modal" style="width:640px;max-height:90vh;overflow-y:auto">
+    <div class="modal-title">
+      <span id="mn-modal-title">Add Menu Package</span>
+      <button class="modal-close" onclick="closeModal('menu-modal')">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group full"><label>Package Name *</label><input id="mn-name" type="text" placeholder="e.g. Gold Package"></div>
+      <div class="form-group"><label>Price for Package (₱) *</label><input id="mn-price" type="number" min="0" placeholder="25000"></div>
+      <div class="form-group"><label>Min. Guests</label><input id="mn-min" type="number" min="0" placeholder="50"></div>
+    </div>
+
+    <!-- Package Assets -->
+    <div style="margin-top:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <label style="font-weight:600;font-size:13px;color:var(--dark)">Package Assets</label>
+        <button class="btn btn-outline btn-sm" type="button" onclick="addAssetRow()">+ Add Asset</button>
+      </div>
+      <div id="mn-assets-container" style="max-height:160px;overflow-y:auto"></div>
+      <div id="mn-assets-empty" style="font-size:13px;color:var(--text-muted);padding:6px 0">No assets added yet.</div>
+    </div>
+
+    <!-- Package Dishes -->
+    <div style="margin-top:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <label style="font-weight:600;font-size:13px;color:var(--dark)">🍽️ Dishes / Menu Items</label>
+        <button class="btn btn-outline btn-sm" type="button" onclick="addDishRow()">+ Add Dish</button>
+      </div>
+      <div id="mn-dishes-container" style="max-height:160px;overflow-y:auto"></div>
+      <div id="mn-dishes-empty" style="font-size:13px;color:var(--text-muted);padding:6px 0">No dishes added yet.</div>
+    </div>
+
+    <!-- Freebies — highlighted -->
+    <div class="freebies-section" style="margin-top:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <label style="font-weight:700;font-size:13px;color:var(--gold-dark)">⭐ Freebies / Inclusions</label>
+        <button class="btn btn-sm" type="button" onclick="addFreebieRow()" style="background:var(--gold);color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600">+ Add Freebie</button>
+      </div>
+      <div id="mn-freebies-container"></div>
+      <div id="mn-freebies-empty" style="font-size:13px;color:var(--text-muted);padding:6px 0">No freebies added yet.</div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('menu-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveMenu()">Save Package</button>
+    </div>
+  </div>
+</div>
+
+<!-- ASSET MODAL -->
+<div class="modal-overlay" id="asset-modal">
+  <div class="modal" style="width:420px">
+    <div class="modal-title">
+      <span id="asset-modal-title">Add Catering Asset</span>
+      <button class="modal-close" onclick="closeModal('asset-modal')">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group full"><label>Asset Name *</label><input id="ast-name" type="text" placeholder="e.g. Round Table, Monobloc Chair"></div>
+      <div class="form-group"><label>Quantity *</label><input id="ast-qty" type="number" min="0" placeholder="50"></div>
+      <div class="form-group"><label>Unit</label>
+        <select id="ast-unit">
+          <option value="pcs">pcs</option>
+          <option value="sets">sets</option>
+          <option value="units">units</option>
+          <option value="tables">tables</option>
+          <option value="chairs">chairs</option>
+          <option value="rolls">rolls</option>
+          <option value="boxes">boxes</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('asset-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveAsset()">Save Asset</button>
+    </div>
+  </div>
+</div>
+
+<!-- DISH MODAL -->
+<div class="modal-overlay" id="dish-modal">
+  <div class="modal" style="width:420px">
+    <div class="modal-title">
+      <span id="dish-modal-title">Add Dish</span>
+      <button class="modal-close" onclick="closeModal('dish-modal')">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group full"><label>Dish Name *</label><input id="dsh-name" type="text" placeholder="e.g. Lechon Baboy"></div>
+      <div class="form-group full"><label>Category</label>
+        <select id="dsh-cat">
+          <option value="Main Course">Main Course</option>
+          <option value="Pasta">Pasta</option>
+          <option value="Soup">Soup</option>
+          <option value="Salad">Salad</option>
+          <option value="Dessert">Dessert</option>
+          <option value="Bread">Bread</option>
+          <option value="Beverage">Beverage</option>
+          <option value="Rice">Rice</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('dish-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveDish()">Save Dish</button>
+    </div>
+  </div>
+</div>
+
+<!-- CLIENT MODAL -->
+<div class="modal-overlay" id="client-modal">
+  <div class="modal" style="width:480px">
+    <div class="modal-title">
+      <span>Add Client</span>
+      <button class="modal-close" onclick="closeModal('client-modal')">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group full"><label>Full Name *</label><input id="cl-name" type="text"></div>
+      <div class="form-group"><label>Phone *</label><input id="cl-phone" type="tel"></div>
+      <div class="form-group"><label>Email</label><input id="cl-email" type="email"></div>
+      <div class="form-group full"><label>Address</label><input id="cl-addr" type="text"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('client-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveClient()">Save Client</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESTOCK MODAL -->
+<div class="modal-overlay" id="restock-modal">
+  <div class="modal" style="width:380px">
+    <div class="modal-title">
+      <span>Restock Ingredient</span>
+      <button class="modal-close" onclick="closeModal('restock-modal')">✕</button>
+    </div>
+    <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px">Adding stock to: <strong id="restock-name"></strong></p>
+    <div class="form-group">
+      <label>Add Quantity</label>
+      <input id="restock-qty" type="number" min="1" placeholder="Enter amount to add">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('restock-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmRestock()">Add Stock</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIFICATION -->
+<div class="notif" id="notif">
+  <span id="notif-icon">✅</span>
+  <span id="notif-msg">Saved!</span>
+</div>
+
+<script>
+// ============================================================
+// EVENT NOTIFICATIONS — auto-popup on dashboard load
+// ============================================================
+let _notifTodayData    = [];
+let _notifUpcomingData = [];
+
+async function loadEventNotifications() {
+  try {
+    const [todayRes, upcomingRes] = await Promise.all([
+      fetch('http://localhost:3000/bookings/today'),
+      fetch('http://localhost:3000/bookings/upcoming')
+    ]);
+    _notifTodayData    = todayRes.ok    ? await todayRes.json()    : [];
+    _notifUpcomingData = upcomingRes.ok ? await upcomingRes.json() : [];
+  } catch(e) {
+    // Fallback: use local data
+    const todayStr = today();
+    const fl = new Date(); fl.setDate(fl.getDate() + 30);
+    const limit = fl.getFullYear() + '-' + String(fl.getMonth()+1).padStart(2,'0') + '-' + String(fl.getDate()).padStart(2,'0');
+    _notifTodayData    = data.bookings.filter(b => b.date === todayStr  && b.status === 'Confirmed').map(b => ({
+      clientName: b.client, eventType: b.event, eventDate: b.date, address: b.venue, guests: b.guests
+    }));
+    _notifUpcomingData = data.bookings.filter(b => b.date > todayStr && b.date <= limit && b.status === 'Confirmed').map(b => ({
+      clientName: b.client, eventType: b.event, eventDate: b.date, address: b.venue
+    }));
+  }
+
+  const totalCount = _notifTodayData.length + _notifUpcomingData.length;
+
+  // Update bell badge dot
+  const bellDot = document.getElementById('notif-bell-dot');
+  if (bellDot) bellDot.style.display = totalCount > 0 ? 'block' : 'none';
+
+  // Alert banner on dashboard
+  const banner = document.getElementById('event-alert-banner');
+  if (banner) {
+    if (_notifTodayData.length > 0) {
+      const names = _notifTodayData.map(r => r.clientName).join(', ');
+      banner.innerHTML = `<span>📅</span> <strong>You have ${_notifTodayData.length} confirmed event${_notifTodayData.length>1?'s':''} scheduled today!</strong> &nbsp;— ${names} &nbsp;<button onclick="openEventNotifications()" style="margin-left:12px;padding:4px 12px;background:var(--gold);color:var(--dark);border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600">View Details</button>`;
+      banner.style.display = 'flex';
+    } else if (_notifUpcomingData.length > 0) {
+      banner.innerHTML = `<span>🔔</span> <strong>${_notifUpcomingData.length} upcoming confirmed event${_notifUpcomingData.length>1?'s':''}</strong> in the next 30 days. &nbsp;<button onclick="openEventNotifications()" style="margin-left:12px;padding:4px 12px;background:var(--gold);color:var(--dark);border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600">View</button>`;
+      banner.style.display = 'flex';
+    } else {
+      banner.style.display = 'none';
+    }
+  }
+
+  // Auto-show popup on first dashboard visit if there are events today
+  if (_notifTodayData.length > 0 && !sessionStorage.getItem('nards_notif_shown')) {
+    sessionStorage.setItem('nards_notif_shown', 'true');
+    setTimeout(() => openEventNotifications(), 800);
+  }
+}
+
+function openEventNotifications() {
+  // Render today list
+  const todayList = document.getElementById('notif-today-list');
+  const todayCnt  = document.getElementById('notif-today-count');
+  if (todayCnt) todayCnt.textContent = _notifTodayData.length;
+  if (todayList) {
+    if (!_notifTodayData.length) {
+      todayList.innerHTML = '<div class="notif-empty">No confirmed events scheduled today.</div>';
+    } else {
+      todayList.innerHTML = _notifTodayData.map(r => {
+        const dateStr = r.eventDate ? r.eventDate.split('T')[0] : '';
+        return `<div class="notif-event-item notif-today-item">
+          <div class="notif-event-icon">📅</div>
+          <div class="notif-event-body">
+            <div class="notif-event-name">${r.clientName}</div>
+            <div class="notif-event-detail">${r.eventType} · ${fmtDate(dateStr)}</div>
+            <div class="notif-event-detail">${r.address || '—'}</div>
+          </div>
+          <span class="badge badge-success">Today</span>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // Render upcoming list
+  const upcomingList = document.getElementById('notif-upcoming-list');
+  const upcomingCnt  = document.getElementById('notif-upcoming-count');
+  if (upcomingCnt) upcomingCnt.textContent = _notifUpcomingData.length;
+  if (upcomingList) {
+    if (!_notifUpcomingData.length) {
+      upcomingList.innerHTML = '<div class="notif-empty">No upcoming confirmed events in the next 30 days.</div>';
+    } else {
+      upcomingList.innerHTML = _notifUpcomingData.slice(0,8).map(r => {
+        const dateStr = r.eventDate ? r.eventDate.split('T')[0] : '';
+        return `<div class="notif-event-item">
+          <div class="notif-event-icon">🔔</div>
+          <div class="notif-event-body">
+            <div class="notif-event-name">${r.clientName}</div>
+            <div class="notif-event-detail">${r.eventType} · ${fmtDate(dateStr)}</div>
+          </div>
+          <span class="badge badge-info">${fmtDate(dateStr)}</span>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  openModal('event-notification-modal');
+}
+
+// ============================================================
+// FIX 1: AUTH GUARD — redirect to login if not authenticated
+// ============================================================
+if (sessionStorage.getItem('nards_admin_auth') !== 'true') {
+  window.location.href = '/login';
+}
+
+// FIX 2: Logout function — clears session and redirects
+function logout() {
+  if (confirm('Are you sure you want to log out?')) {
+    sessionStorage.removeItem('nards_admin_auth');
+    window.location.href = '/login';
+  }
+}
+
+// ============================================================
+// FIX 3: DATA PERSISTENCE with localStorage
+// ============================================================
+const STORAGE_KEY = 'nards_admin_data';
+
+const defaultData = {
+  bookings: [
+    { id: 'BK-001', client: 'Maria Santos', phone: '0917-123-4567', email: 'maria@email.com', event: 'Wedding', date: '2025-08-15', time: '12:00', guests: 200, package: 'Gold Package', venue: 'Heritage Hotel, Pasig', amount: 96000, dp: 30000, status: 'Confirmed', notes: 'No pork dishes.' },
+    { id: 'BK-002', client: 'Jose Reyes', phone: '0918-987-6543', email: '', event: 'Birthday Party', date: '2025-07-20', time: '18:00', guests: 80, package: 'Silver Package', venue: 'Home, Marikina', amount: 28000, dp: 10000, status: 'Pending', notes: '' },
+  ],
+  inventory: [
+    { id: 'ing1', name: 'Chicken Breast', category: 'Meat & Poultry', stock: 45, unit: 'kg', min: 20, good: 50, updated: today() },
+    { id: 'ing2', name: 'Pork Belly', category: 'Meat & Poultry', stock: 8, unit: 'kg', min: 15, good: 40, updated: today() },
+    { id: 'ing3', name: 'Rice (Sinandomeng)', category: 'Grains & Rice', stock: 120, unit: 'kg', min: 50, good: 150, updated: today() },
+    { id: 'ing4', name: 'Tomatoes', category: 'Vegetables', stock: 5, unit: 'kg', min: 10, good: 25, updated: today() },
+    { id: 'ing5', name: 'Onions', category: 'Vegetables', stock: 18, unit: 'kg', min: 8, good: 20, updated: today() },
+    { id: 'ing6', name: 'Cooking Oil', category: 'Spices & Condiments', stock: 25, unit: 'L', min: 10, good: 30, updated: today() },
+    { id: 'ing7', name: 'Shrimp', category: 'Seafood', stock: 3, unit: 'kg', min: 10, good: 20, updated: today() },
+    { id: 'ing8', name: 'Pasta (Spaghetti)', category: 'Grains & Rice', stock: 30, unit: 'kg', min: 10, good: 40, updated: today() },
+  ],
+  menus: [
+    { id: 'pkg1', name: 'Silver Package', price: 350, minGuests: 50, inclusions: '5 Main Dishes, 2 Pasta, Rice, Soft Drinks, Waiters' },
+    { id: 'pkg2', name: 'Gold Package', price: 480, minGuests: 100, inclusions: '7 Main Dishes, 3 Pasta, Rice, Free Flowing Drinks, 2 Desserts, Waiters, Chafing Dishes' },
+    { id: 'pkg3', name: 'Platinum Package', price: 650, minGuests: 150, inclusions: '10 Main Dishes, 4 Pasta, Lechon, Free Flowing Drinks, 3 Desserts, Full Setup, Waiters, Decorations' }
+  ],
+  clients: [
+    { id: 'cl1', name: 'Maria Santos', phone: '0917-123-4567', email: 'maria@email.com', address: 'Pasig City' },
+    { id: 'cl2', name: 'Jose Reyes', phone: '0918-987-6543', email: '', address: 'Marikina City' },
+  ],
+  deletedBookingIds: []
+};
+
+function today() {
+  const n = new Date();
+  return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0');
+}
+function uid(prefix) { return prefix + '-' + Math.random().toString(36).substr(2,6).toUpperCase(); }
+
+// Load from localStorage, fall back to default seed data
+function loadData() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    const d = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(defaultData));
+    if (!d.deletedBookingIds) d.deletedBookingIds = [];
+    return d;
+  } catch(e) {
+    return JSON.parse(JSON.stringify(defaultData));
+  }
+}
+
+// Save to localStorage after every change
+function saveData() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {}
+}
+
+let data = loadData();
+let editIdx = { booking: -1, ingredient: -1 };
+let restockIdx = -1;
+
+// ============================================================
+// SYNC BOOKINGS FROM BACKEND API (customer submissions)
+// ============================================================
+async function syncFromAPI() {
+  try {
+    const res = await fetch('http://localhost:3000/bookings');
+    if (!res.ok) return;
+    const rows = await res.json();
+    let changed = false;
+    rows.forEach(row => {
+      const apiId   = 'DB-' + row.id;
+      const pkgName = row.package || '';
+      const pkgMatch = packagesList.find(p => p.name === pkgName);
+      const price   = pkgMatch ? parseFloat(pkgMatch.price) : (parseInt(pkgName) || 0);
+      const status = row.status
+        ? row.status.charAt(0).toUpperCase() + row.status.slice(1)
+        : 'Pending';
+      const date = row.eventDate ? row.eventDate.split('T')[0] : '';
+      // Skip bookings that were deleted by the admin
+      if (data.deletedBookingIds.includes(apiId)) return;
+      const existing = data.bookings.find(b => b.id === apiId);
+      if (existing) {
+        if (existing.status !== status) { existing.status = status; changed = true; }
+        const freshNotes = row.notes || '';
+        if (existing.notes !== freshNotes) { existing.notes = freshNotes; changed = true; }
+        if (!existing.guests && (row.guests || pkgMatch?.min_guests)) {
+          existing.guests = row.guests || pkgMatch?.min_guests || 0; changed = true;
+        }
+      } else {
+        const minPax = pkgMatch ? (pkgMatch.min_guests || 0) : 0;
+        data.bookings.push({
+          id:      apiId,
+          client:  row.clientName  || '',
+          phone:   row.phone       || '',
+          email:   row.email       || '',
+          event:   row.eventType   || '',
+          date,
+          time:    '',
+          guests:  row.guests || minPax,
+          package: pkgName || (price ? '\u20b1' + price.toLocaleString('en-PH') + ' Package' : ''),
+          venue:   row.address    || '',
+          amount:  price,
+          dp:      Math.round(price * 0.2),
+          status,
+          notes:   row.notes || ''
+        });
+        changed = true;
+      }
+    });
+    if (changed) saveData();
+  } catch(e) {
+    // server offline — continue with local data
+  }
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function navigate(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-' + view).classList.add('active');
+  const titles = { dashboard:'Dashboard', bookings:'Booking Management', calendar:'Booking Calendar', inventory:'Ingredient Inventory', menu:'Menu Packages', assets:'Catering Assets', dishes:'Dish Management', clients:'Client Records', reports:'Business Reports' };
+  document.getElementById('pageTitle').textContent = titles[view] || view;
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + view + "'")) n.classList.add('active');
+  });
+  if (view === 'dashboard') syncFromAPI().then(() => { renderDashboard(); loadEventNotifications(); });
+  if (view === 'bookings')  syncFromAPI().then(() => renderBookings());
+  if (view === 'inventory') renderInventory();
+  if (view === 'menu')      renderMenuCards();
+  if (view === 'calendar')  syncFromAPI().then(() => renderCalendar());
+  if (view === 'assets')    renderAssets();
+  if (view === 'dishes')    renderDishes();
+  if (view === 'clients')   renderClients();
+  if (view === 'reports')   renderReports();
+}
+
+// ============================================================
+// MODALS
+// ============================================================
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+async function openBookingModal(idx) {
+  editIdx.booking = idx !== undefined ? idx : -1;
+  document.getElementById('booking-modal-title').textContent = idx !== undefined ? 'Edit Booking' : 'New Booking';
+  ['bk-client','bk-phone','bk-email','bk-event','bk-date','bk-time','bk-guests','bk-package','bk-venue','bk-amount','bk-dp','bk-status','bk-notes']
+    .forEach(f => { const el = document.getElementById(f); if (el) el.value = ''; });
+
+  // Populate event types from DB
+  try {
+    const etRes = await fetch('http://localhost:3000/bookings/eventtypes');
+    if (etRes.ok) {
+      const types = await etRes.json();
+      document.getElementById('bk-event').innerHTML =
+        '<option value="">Select event...</option>' +
+        types.map(t => `<option value="${t}">${t}</option>`).join('');
+    }
+  } catch(e) {}
+
+  const sel = document.getElementById('bk-package');
+  sel.innerHTML = '<option value="">Select package...</option>' + (packagesList.length ? packagesList : data.menus).map(m => `<option value="${m.name}">${m.name} (₱${Number(m.price).toLocaleString('en-PH')})</option>`).join('');
+  if (idx !== undefined) {
+    const b = data.bookings[idx];
+    document.getElementById('bk-client').value  = b.client;
+    document.getElementById('bk-phone').value   = b.phone;
+    document.getElementById('bk-email').value   = b.email;
+    document.getElementById('bk-event').value   = b.event;
+    document.getElementById('bk-date').value    = b.date;
+    document.getElementById('bk-time').value    = b.time;
+    document.getElementById('bk-guests').value  = b.guests;
+    document.getElementById('bk-package').value = b.package;
+    document.getElementById('bk-venue').value   = b.venue;
+    document.getElementById('bk-amount').value  = b.amount;
+    document.getElementById('bk-dp').value      = b.dp;
+    document.getElementById('bk-status').value  = b.status;
+    document.getElementById('bk-notes').value   = b.notes;
+  }
+  openModal('booking-modal');
+}
+
+function openIngredientModal(idx) {
+  editIdx.ingredient = idx !== undefined ? idx : -1;
+  document.getElementById('ing-modal-title').textContent = idx !== undefined ? 'Edit Ingredient' : 'Add Ingredient';
+  ['ing-name','ing-stock','ing-min','ing-good'].forEach(f => document.getElementById(f).value = '');
+  if (idx !== undefined) {
+    const i = data.inventory[idx];
+    document.getElementById('ing-name').value  = i.name;
+    document.getElementById('ing-cat').value   = i.category;
+    document.getElementById('ing-stock').value = i.stock;
+    document.getElementById('ing-unit').value  = i.unit;
+    document.getElementById('ing-min').value   = i.min;
+    document.getElementById('ing-good').value  = i.good;
+  }
+  openModal('ingredient-modal');
+}
+
+async function openMenuModal(packageId) {
+  editPackageId = packageId || null;
+  document.getElementById('mn-modal-title').textContent = packageId ? 'Edit Menu Package' : 'Add Menu Package';
+  document.getElementById('mn-name').value  = '';
+  document.getElementById('mn-price').value = '';
+  document.getElementById('mn-min').value   = '';
+  document.getElementById('mn-assets-container').innerHTML = '';
+  document.getElementById('mn-dishes-container').innerHTML = '';
+  document.getElementById('mn-freebies-container').innerHTML = '';
+  await fetchAssets();
+  await fetchDishes();
+  if (packageId) {
+    try {
+      const res = await fetch(`http://localhost:3000/packages/${packageId}`);
+      if (res.ok) {
+        const pkg = await res.json();
+        document.getElementById('mn-name').value  = pkg.name;
+        document.getElementById('mn-price').value = pkg.price;
+        document.getElementById('mn-min').value   = pkg.min_guests;
+        (pkg.assets   || []).forEach(a => addAssetRow(a.asset_id, a.qty_required));
+        (pkg.dishes   || []).forEach(d => addDishRow(d.dish_id));
+        (pkg.freebies || []).forEach(f => addFreebieRow(f.name));
+      }
+    } catch(e) {}
+  }
+  updateAssetEmptyMsg();
+  updateDishEmptyMsg();
+  updateFreebieEmptyMsg();
+  openModal('menu-modal');
+}
+function openClientModal() { openModal('client-modal'); ['cl-name','cl-phone','cl-email','cl-addr'].forEach(f => document.getElementById(f).value = ''); }
+
+function openRestockModal(idx) {
+  restockIdx = idx;
+  document.getElementById('restock-name').textContent = data.inventory[idx].name;
+  document.getElementById('restock-qty').value = '';
+  openModal('restock-modal');
+}
+
+// ============================================================
+// SAVE FUNCTIONS
+// ============================================================
+async function saveBooking() {
+  const client = document.getElementById('bk-client').value.trim();
+  const event  = document.getElementById('bk-event').value;
+  const date   = document.getElementById('bk-date').value;
+  const guests = document.getElementById('bk-guests').value;
+  const amount = document.getElementById('bk-amount').value;
+  if (!client || !event || !date || !guests || !amount) { notify('Please fill all required fields', '⚠️'); return; }
+
+  const booking = {
+    id:      editIdx.booking >= 0 ? data.bookings[editIdx.booking].id : uid('BK'),
+    client,
+    phone:   document.getElementById('bk-phone').value.trim(),
+    email:   document.getElementById('bk-email').value.trim(),
+    event, date,
+    time:    document.getElementById('bk-time').value,
+    guests:  parseInt(guests),
+    package: document.getElementById('bk-package').value,
+    venue:   document.getElementById('bk-venue').value.trim(),
+    amount:  parseFloat(amount),
+    dp:      parseFloat(document.getElementById('bk-dp').value) || 0,
+    status:  document.getElementById('bk-status').value,
+    notes:   document.getElementById('bk-notes').value.trim()
+  };
+
+  // If editing a DB booking, sync changes back to the server
+  if (editIdx.booking >= 0 && booking.id && booking.id.startsWith('DB-')) {
+    const dbId = booking.id.replace('DB-', '');
+    try {
+      // Update full booking record
+      await fetch(`http://localhost:3000/bookings/${dbId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientName: booking.client,
+          address:    booking.venue,
+          eventType:  booking.event,
+          package:    booking.package,
+          eventDate:  booking.date,
+          phone:      booking.phone,
+          email:      booking.email,
+          guests:     booking.guests,
+          notes:      booking.notes
+        })
+      });
+      // Sync status separately via PATCH
+      await fetch(`http://localhost:3000/bookings/${dbId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: booking.status.toLowerCase() })
+      });
+    } catch(e) {
+      notify('Saved locally — server not connected', '⚠️');
+    }
+  }
+
+  if (editIdx.booking >= 0) {
+    data.bookings[editIdx.booking] = booking;
+    // Auto-register client in Client Records when marked Completed
+    if (!data.clients.find(c => c.name.toLowerCase() === client.toLowerCase())) {
+      data.clients.push({ id: uid('CL'), name: client, phone: booking.phone, email: booking.email, address: '' });
+    }
+  } else {
+    data.bookings.push(booking);
+    if (!data.clients.find(c => c.name.toLowerCase() === client.toLowerCase())) {
+      data.clients.push({ id: uid('CL'), name: client, phone: booking.phone, email: booking.email, address: '' });
+    }
+  }
+
+  saveData();
+  closeModal('booking-modal');
+  renderBookings();
+  notify('Booking saved!', '✅');
+  if (booking.status === 'Confirmed' || booking.status === 'Pending') {
+    setTimeout(() => showConfirmation(booking), 300);
+  }
+}
+
+function saveIngredient() {
+  const name  = document.getElementById('ing-name').value.trim();
+  const stock = document.getElementById('ing-stock').value;
+  const min   = document.getElementById('ing-min').value;
+  if (!name || stock === '' || min === '') { notify('Please fill required fields', '⚠️'); return; }
+
+  const ing = {
+    id:       editIdx.ingredient >= 0 ? data.inventory[editIdx.ingredient].id : uid('ING'),
+    name,
+    category: document.getElementById('ing-cat').value,
+    stock:    parseFloat(stock),
+    unit:     document.getElementById('ing-unit').value,
+    min:      parseFloat(min),
+    good:     parseFloat(document.getElementById('ing-good').value) || parseFloat(min) * 3,
+    updated:  today()
+  };
+
+  if (editIdx.ingredient >= 0) { data.inventory[editIdx.ingredient] = ing; }
+  else { data.inventory.push(ing); }
+
+  saveData();
+  closeModal('ingredient-modal');
+  renderInventory();
+  notify('Ingredient saved!', '✅');
+}
+
+async function saveMenu() {
+  const name      = document.getElementById('mn-name').value.trim();
+  const price     = document.getElementById('mn-price').value;
+  const minGuests = document.getElementById('mn-min').value;
+  if (!name || !price) { notify('Fill required fields', '⚠️'); return; }
+  const rows   = document.querySelectorAll('#mn-assets-container .asset-row');
+  const assets = [];
+  for (const row of rows) {
+    const assetId = row.querySelector('.asset-row-select').value;
+    const qty     = parseInt(row.querySelector('.asset-row-qty').value) || 1;
+    if (assetId) assets.push({ asset_id: parseInt(assetId), qty_required: qty });
+  }
+  const dishRows = document.querySelectorAll('#mn-dishes-container .dish-row');
+  const dishes   = [];
+  for (const row of dishRows) {
+    const dishId = row.querySelector('.dish-row-select').value;
+    if (dishId) dishes.push({ dish_id: parseInt(dishId) });
+  }
+  const freebieRows = document.querySelectorAll('#mn-freebies-container .freebie-row');
+  const freebies    = [];
+  for (const row of freebieRows) {
+    const name = row.querySelector('.freebie-row-input').value.trim();
+    if (name) freebies.push({ name });
+  }
+  const body = { name, price: parseFloat(price), min_guests: parseInt(minGuests) || 0, assets, dishes, freebies };
+  try {
+    const url    = editPackageId ? `http://localhost:3000/packages/${editPackageId}` : 'http://localhost:3000/packages';
+    const method = editPackageId ? 'PUT' : 'POST';
+    const res    = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    if (!res.ok) { const e = await res.json(); notify(e.error || 'Error saving', '❌'); return; }
+    closeModal('menu-modal');
+    renderMenuCards();
+    notify(editPackageId ? 'Package updated!' : 'Package added!', '✅');
+  } catch(e) {
+    notify('Server not connected', '❌');
+  }
+}
+
+function saveClient() {
+  const name  = document.getElementById('cl-name').value.trim();
+  const phone = document.getElementById('cl-phone').value.trim();
+  if (!name || !phone) { notify('Fill required fields', '⚠️'); return; }
+  data.clients.push({ id: uid('CL'), name, phone, email: document.getElementById('cl-email').value.trim(), address: document.getElementById('cl-addr').value.trim() });
+  saveData();
+  closeModal('client-modal');
+  renderClients();
+  notify('Client added!', '✅');
+}
+
+function confirmRestock() {
+  const qty = parseFloat(document.getElementById('restock-qty').value);
+  if (!qty || qty <= 0) { notify('Enter valid quantity', '⚠️'); return; }
+  data.inventory[restockIdx].stock  += qty;
+  data.inventory[restockIdx].updated = today();
+  saveData();
+  closeModal('restock-modal');
+  renderInventory();
+  notify('Stock updated!', '✅');
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function stockStatus(ing) {
+  const pct = ing.good > 0 ? (ing.stock / ing.good) * 100 : 100;
+  if (ing.stock <= 0 || ing.stock < ing.min) return { label:'Critical',  cls:'badge-danger',  fillCls:'fill-danger',  pct: Math.min(pct,100), key:'critical' };
+  if (ing.stock < ing.good * 0.4)            return { label:'Low Stock', cls:'badge-warning', fillCls:'fill-warning', pct: Math.min(pct,100), key:'low' };
+  return { label:'Good Stock', cls:'badge-success', fillCls:'fill-success', pct: Math.min(pct,100), key:'good' };
+}
+
+function statusBadge(status) {
+  const map = { Confirmed:'badge-success', Pending:'badge-warning', Completed:'badge-info', Cancelled:'badge-danger' };
+  return `<span class="badge ${map[status]||'badge-info'}">${status}</span>`;
+}
+
+function fmtDate(d) {
+  if (!d) return '-';
+  return new Date(d + 'T00:00:00').toLocaleDateString('en-PH', { month:'short', day:'numeric', year:'numeric' });
+}
+
+function fmtMoney(n) { return '₱' + Number(n).toLocaleString('en-PH'); }
+
+// ============================================================
+// RENDER FUNCTIONS
+// ============================================================
+function renderInventory() {
+  const search = (document.getElementById('inv-search')?.value || '').toLowerCase();
+  const filter = document.getElementById('inv-filter')?.value || '';
+  const items  = data.inventory.filter(i => {
+    const s = stockStatus(i);
+    return (!search || i.name.toLowerCase().includes(search) || i.category.toLowerCase().includes(search))
+        && (!filter || s.key === filter);
+  });
+
+  document.getElementById('inventory-tbody').innerHTML = items.length
+    ? items.map(i => {
+        const realIdx = data.inventory.indexOf(i);
+        const s = stockStatus(i);
+        return `<tr>
+          <td><strong>${i.name}</strong></td><td>${i.category}</td>
+          <td><strong>${i.stock}</strong></td><td>${i.unit}</td><td>${i.min}</td>
+          <td style="min-width:120px">
+            <div style="font-size:12px;color:var(--text-muted)">${Math.round(s.pct)}%</div>
+            <div class="progress-bar"><div class="progress-fill ${s.fillCls}" style="width:${s.pct}%"></div></div>
+          </td>
+          <td><span class="badge ${s.cls}">${s.label}</span></td>
+          <td style="font-size:12px;color:var(--text-muted)">${i.updated}</td>
+          <td><div style="display:flex;gap:6px">
+            <button class="btn btn-success btn-sm" onclick="openRestockModal(${realIdx})">+ Restock</button>
+            <button class="btn btn-outline btn-sm" onclick="openIngredientModal(${realIdx})">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteIngredient(${realIdx})">Del</button>
+          </div></td>
+        </tr>`;
+      }).join('')
+    : `<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">🧂</div><p>No ingredients found.</p></div></td></tr>`;
+
+  const critical = data.inventory.filter(i => stockStatus(i).key === 'critical');
+  const low      = data.inventory.filter(i => stockStatus(i).key === 'low');
+  let html = '';
+  if (critical.length) html += `<div class="alert alert-danger"><span class="alert-icon">🚨</span><div><strong>Critical Stock!</strong> ${critical.map(i=>i.name).join(', ')} — needs immediate restocking.</div></div>`;
+  if (low.length)      html += `<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div><strong>Low Stock Warning:</strong> ${low.map(i=>i.name).join(', ')} are running low.</div></div>`;
+  document.getElementById('inv-alerts').innerHTML = html;
+}
+
+function renderBookings() {
+  const search = (document.getElementById('booking-search')?.value || '').toLowerCase();
+  const filter = document.getElementById('booking-filter')?.value || '';
+  const items  = data.bookings.filter(b =>
+    b.status !== 'Completed'
+    && (!search || b.client.toLowerCase().includes(search) || b.event.toLowerCase().includes(search))
+    && (!filter || b.status === filter)
+  );
+
+  document.getElementById('bookings-tbody').innerHTML = items.length
+    ? items.map(b => {
+        const realIdx = data.bookings.indexOf(b);
+        return `<tr>
+          <td><span class="badge badge-gold">${b.id}</span></td>
+          <td><strong>${b.client}</strong><br><span style="font-size:12px;color:var(--text-muted)">${b.phone}</span></td>
+          <td>${b.event}</td>
+          <td>${fmtDate(b.date)}<br><span style="font-size:12px;color:var(--text-muted)">${b.time||''}</span></td>
+          <td>${b.guests}</td><td>${b.package||'-'}</td>
+          <td><strong>${fmtMoney(b.amount)}</strong><br><span style="font-size:12px;color:var(--text-muted)">DP: ${fmtMoney(b.dp)}</span>${b.status === 'Confirmed' ? `<br><span style="font-size:12px;color:var(--gold);font-weight:600">Balance: ${fmtMoney(b.amount - b.dp)}</span>` : ''}</td>
+          <td>${statusBadge(b.status)}</td>
+          <td><div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="btn btn-outline btn-sm" onclick="showConfirmation(data.bookings[${realIdx}])">View</button>
+            <button class="btn btn-outline btn-sm" onclick="openBookingModal(${realIdx})">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteBooking(${realIdx})">Del</button>
+          </div></td>
+        </tr>`;
+      }).join('')
+    : `<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">📋</div><p>No active bookings found.</p><p style="font-size:12px;color:var(--muted);margin-top:4px">Completed bookings are stored in <strong>Client Records</strong>.</p></div></td></tr>`;
+}
+
+async function renderMenuCards() {
+  const el = document.getElementById('menu-cards');
+  try {
+    const res = await fetch('http://localhost:3000/packages');
+    if (!res.ok) throw new Error();
+    const packages = await res.json();
+    el.innerHTML = packages.length
+      ? packages.map(p => {
+          const assetHtml = (p.assets || []).length
+            ? p.assets.map(a => `<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid var(--border)"><span>${a.name}</span><span style="color:var(--text-muted)">${a.qty_required} ${a.unit}</span></div>`).join('')
+            : '<div style="font-size:13px;color:var(--text-muted)">No assets assigned.</div>';
+
+          // Group dishes by category
+          const dishMap = {};
+          (p.dishes || []).forEach(d => {
+            if (!dishMap[d.category]) dishMap[d.category] = [];
+            dishMap[d.category].push(d.name);
+          });
+          const dishHtml = Object.keys(dishMap).length
+            ? Object.entries(dishMap).map(([cat, names]) =>
+                `<div style="margin-bottom:6px">
+                  <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">${cat}</div>
+                  ${names.map(n => `<div style="font-size:13px;padding:2px 0 2px 10px;color:var(--dark)">• ${n}</div>`).join('')}
+                </div>`
+              ).join('')
+            : '<div style="font-size:13px;color:var(--text-muted)">No dishes listed.</div>';
+
+          const freebieHtml = (p.freebies || []).length
+            ? (p.freebies || []).map(f => `<div style="font-size:13px;padding:3px 0 3px 10px;color:var(--gold-dark);font-weight:500">⭐ ${f.name}</div>`).join('')
+            : '<div style="font-size:13px;color:var(--text-muted)">No freebies listed.</div>';
+
+          return `<div class="card" style="position:relative">
+            <div style="position:absolute;top:16px;right:16px;display:flex;gap:6px">
+              <button class="btn btn-outline btn-sm" onclick="openMenuModal(${p.id})">Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteMenu(${p.id})">Del</button>
+            </div>
+            <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--gold-dark);margin-bottom:4px;padding-right:100px">${p.name}</div>
+            <div style="font-size:28px;font-weight:700;color:var(--dark);margin-bottom:4px">₱${Number(p.price).toLocaleString('en-PH')}</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Min. ${p.min_guests} guests</div>
+            <div class="divider"></div>
+            <div style="margin-top:10px">
+              <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px">Assets</div>
+              ${assetHtml}
+            </div>
+            <div style="margin-top:12px">
+              <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px">🍽️ Dishes</div>
+              ${dishHtml}
+            </div>
+            <div style="margin-top:12px;background:linear-gradient(135deg,rgba(196,150,50,0.08),rgba(196,150,50,0.16));border:1.5px solid var(--gold);border-radius:8px;padding:10px">
+              <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gold-dark);margin-bottom:6px">⭐ Freebies</div>
+              ${freebieHtml}
+            </div>
+          </div>`;
+        }).join('')
+      : '<div class="empty-state"><div class="empty-icon">🍽️</div><p>No packages yet.</p></div>';
+  } catch(e) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">🍽️</div><p>Could not load packages. Is the server running?</p></div>';
+  }
+}
+
+function renderClients() {
+  const search = (document.getElementById('client-search')?.value || '').toLowerCase();
+  const items  = data.clients.filter(c => !search || c.name.toLowerCase().includes(search));
+
+  document.getElementById('clients-tbody').innerHTML = items.length
+    ? items.map(c => {
+        const doneBks   = data.bookings.filter(b => b.client.toLowerCase() === c.name.toLowerCase() && b.status === 'Completed');
+        const totalPaid = doneBks.reduce((s,b) => s + b.amount, 0);
+        const hid = 'chrec-' + c.id;
+        const histRows = doneBks.map(b => `<tr style="border-top:1px solid var(--border)">
+            <td style="padding:7px 12px;font-size:12px;color:var(--muted)">${b.id}</td>
+            <td style="padding:7px 12px;font-size:13px">${fmtDate(b.date)}</td>
+            <td style="padding:7px 12px;font-size:13px">${b.event}</td>
+            <td style="padding:7px 12px;font-size:13px">${b.package||'\u2014'}</td>
+            <td style="padding:7px 12px;font-size:13px">${b.guests} pax</td>
+            <td style="padding:7px 12px;font-size:13px;font-weight:600">${fmtMoney(b.amount)}</td>
+            <td style="padding:7px 12px"><span class="badge badge-done">\u2713 Done</span></td>
+          </tr>`).join('');
+        return `<tr>
+          <td><strong>${c.name}</strong></td>
+          <td>${c.phone||'\u2014'}</td>
+          <td>${c.email||'\u2014'}</td>
+          <td>${doneBks.length ? `<strong>${doneBks.length}</strong> <span style="font-size:12px;color:var(--success)">completed</span>` : '<span style="font-size:12px;color:var(--muted)">None yet</span>'}</td>
+          <td>${totalPaid ? fmtMoney(totalPaid) : '\u2014'}</td>
+          <td style="display:flex;gap:6px;flex-wrap:wrap">
+            ${doneBks.length ? `<button class="btn btn-outline btn-sm" onclick="toggleClientRec('${hid}')">View Records</button>` : ''}
+            <button class="btn btn-danger btn-sm" onclick="deleteClient('${c.id}')">Remove</button>
+          </td>
+        </tr>
+        ${doneBks.length ? `<tr id="${hid}" style="display:none">
+          <td colspan="6" style="padding:0;background:var(--cream)">
+            <div style="padding:8px 16px 4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted)">Completed Event Records</div>
+            <table style="width:100%;border-collapse:collapse">
+              <thead><tr style="background:rgba(0,0,0,0.03)">
+                <th style="padding:6px 12px;font-size:11px;text-align:left;color:var(--muted);font-weight:600">Ref</th>
+                <th style="padding:6px 12px;font-size:11px;text-align:left;color:var(--muted);font-weight:600">Date</th>
+                <th style="padding:6px 12px;font-size:11px;text-align:left;color:var(--muted);font-weight:600">Event</th>
+                <th style="padding:6px 12px;font-size:11px;text-align:left;color:var(--muted);font-weight:600">Package</th>
+                <th style="padding:6px 12px;font-size:11px;text-align:left;color:var(--muted);font-weight:600">Guests</th>
+                <th style="padding:6px 12px;font-size:11px;text-align:left;color:var(--muted);font-weight:600">Amount</th>
+                <th style="padding:6px 12px;font-size:11px;text-align:left;color:var(--muted);font-weight:600">Status</th>
+              </tr></thead>
+              <tbody>${histRows}</tbody>
+            </table>
+          </td>
+        </tr>` : ''}`;
+      }).join('')
+    : `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">👥</div><p>No client records found.</p></div></td></tr>`;
+}
+
+function toggleClientRec(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'table-row' : 'none';
+}
+
+function renderDashboard() {
+  const todayStr = today();
+  const [ty, tm] = todayStr.split('-').map(Number);
+
+  const monthRev = data.bookings
+    .filter(b => {
+      if (b.status !== 'Confirmed') return false;
+      const d = b.date ? b.date.split('T')[0] : '';
+      const [y, m] = d.split('-').map(Number);
+      return y === ty && m === tm;
+    })
+    .reduce((s, b) => s + b.amount, 0);
+
+  const lowStock = data.inventory.filter(i => stockStatus(i).key !== 'good').length;
+
+  const fl = new Date(); fl.setDate(fl.getDate() + 30);
+  const limitStr = fl.getFullYear() + '-' + String(fl.getMonth()+1).padStart(2,'0') + '-' + String(fl.getDate()).padStart(2,'0');
+  const upcoming = data.bookings.filter(b => {
+    const d = b.date ? b.date.split('T')[0] : '';
+    return d > todayStr && d <= limitStr && b.status !== 'Cancelled' && b.status !== 'Completed';
+  }).length;
+
+  const todayEvts  = data.bookings.filter(b => b.date && b.date.split('T')[0] === todayStr && b.status === 'Confirmed');
+  const pendingCnt = data.bookings.filter(b => b.status === 'Pending').length;
+
+  document.getElementById('stat-bookings').textContent  = data.bookings.length;
+  document.getElementById('stat-revenue').textContent   = fmtMoney(monthRev);
+  document.getElementById('stat-lowstock').textContent  = lowStock;
+  document.getElementById('stat-upcoming').textContent  = upcoming;
+  document.getElementById('stat-today').textContent     = todayEvts.length;
+  document.getElementById('stat-pending').textContent   = pendingCnt;
+
+  // Recent bookings
+  const rb     = document.getElementById('dash-recent-bookings');
+  const recent = [...data.bookings].reverse().filter(b => b.status !== 'Completed').slice(0,4);
+  rb.innerHTML = recent.length
+    ? recent.map(b => `
+        <div class="recent-item">
+          <div><div class="ri-name">${b.client}</div><div class="ri-sub">${b.event} — ${fmtDate(b.date)}</div></div>
+          <div style="text-align:right">
+            ${statusBadge(b.status)}
+            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">${fmtMoney(b.amount)}</div>
+          </div>
+        </div>`).join('')
+    : '<div class="empty-state"><div class="empty-icon">📋</div><p>No bookings yet</p></div>';
+
+  // Today's events widget
+  renderTodayEventsWidget(todayEvts);
+
+  // Upcoming events widget — pull from API for freshness
+  renderUpcomingEventsWidget();
+
+  // Status summary widget
+  renderStatusSummary();
+
+  // Low stock
+  const ls       = document.getElementById('dash-low-stock');
+  const lowItems = data.inventory.filter(i => stockStatus(i).key !== 'good');
+  ls.innerHTML = lowItems.length
+    ? lowItems.slice(0,5).map(i => {
+        const s = stockStatus(i);
+        return `<div class="recent-item">
+          <div><div class="ri-name">${i.name}</div><div class="ri-sub">${i.stock} ${i.unit} remaining (min: ${i.min})</div></div>
+          <span class="badge ${s.cls}">${s.label}</span>
+        </div>`;
+      }).join('')
+    : '<div class="empty-state"><div class="empty-icon">✅</div><p>All ingredients well stocked</p></div>';
+}
+
+function renderTodayEventsWidget(todayEvts) {
+  const el = document.getElementById('dash-today-events');
+  if (!todayEvts || !todayEvts.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">📅</div><p>No confirmed events today</p></div>';
+    return;
+  }
+  el.innerHTML = todayEvts.map(b => {
+    const idx = data.bookings.indexOf(b);
+    return `<div class="recent-item">
+      <div>
+        <div class="ri-name">${b.client}</div>
+        <div class="ri-sub">${b.event}${b.time ? ' at ' + b.time : ''} · ${b.guests} pax</div>
+        <div class="ri-sub">${b.venue || b.address || '—'}</div>
+      </div>
+      <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        ${statusBadge(b.status)}
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">${fmtMoney(b.amount)}</div>
+        ${idx >= 0 ? `<button onclick="openBookingModal(${idx})" class="btn btn-outline btn-sm" style="font-size:11px;padding:3px 10px">View</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function renderUpcomingEventsWidget() {
+  const el = document.getElementById('dash-upcoming-events');
+  try {
+    const res = await fetch('http://localhost:3000/bookings/upcoming');
+    if (!res.ok) throw new Error();
+    const rows = await res.json();
+    const filteredRows = rows.filter(r => r.status !== 'completed' && r.status !== 'Completed');
+    if (!filteredRows.length) {
+      el.innerHTML = '<div class="empty-state"><div class="empty-icon">🔔</div><p>No upcoming confirmed events</p></div>';
+      return;
+    }
+    el.innerHTML = filteredRows.slice(0,5).map(r => {
+      const dateStr = r.eventDate ? r.eventDate.split('T')[0] : '';
+      const localIdx = data.bookings.findIndex(b => b.id === 'DB-' + r.id);
+      return `<div class="recent-item">
+        <div>
+          <div class="ri-name">${r.clientName}</div>
+          <div class="ri-sub">${r.eventType} · ${fmtDate(dateStr)}</div>
+          <div class="ri-sub">${r.address || '—'}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+          <span class="badge badge-success">Confirmed</span>
+          ${localIdx >= 0 ? `<button onclick="openBookingModal(${localIdx})" class="btn btn-outline btn-sm" style="font-size:11px;padding:3px 10px">View</button>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    // Fallback to local data
+    const todayStr = today();
+    const fl = new Date(); fl.setDate(fl.getDate() + 30);
+    const limit = fl.getFullYear() + '-' + String(fl.getMonth()+1).padStart(2,'0') + '-' + String(fl.getDate()).padStart(2,'0');
+    const upcoming = data.bookings.filter(b =>
+      b.status === 'Confirmed' && b.date > todayStr && b.date <= limit && b.status !== 'Completed'
+    ).sort((a,b) => a.date.localeCompare(b.date)).slice(0,5);
+    el.innerHTML = upcoming.length
+      ? upcoming.map(b => {
+          const idx = data.bookings.indexOf(b);
+          return `<div class="recent-item">
+            <div><div class="ri-name">${b.client}</div><div class="ri-sub">${b.event} · ${fmtDate(b.date)}</div></div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+              <span class="badge badge-success">Confirmed</span>
+              ${idx >= 0 ? `<button onclick="openBookingModal(${idx})" class="btn btn-outline btn-sm" style="font-size:11px;padding:3px 10px">View</button>` : ''}
+            </div>
+          </div>`;
+        }).join('')
+      : '<div class="empty-state"><div class="empty-icon">🔔</div><p>No upcoming confirmed events</p></div>';
+  }
+}
+
+async function renderStatusSummary() {
+  const el = document.getElementById('dash-status-summary');
+  const statusColors = { pending:'badge-warning', confirmed:'badge-success', completed:'badge-info', cancelled:'badge-danger' };
+  try {
+    const res = await fetch('http://localhost:3000/bookings/summary');
+    if (!res.ok) throw new Error();
+    const rows = await res.json();
+    const total = rows.reduce((s,r) => s + Number(r.count), 0);
+    el.innerHTML = rows.map(r => {
+      const pct = total ? Math.round((r.count / total) * 100) : 0;
+      const cls = statusColors[r.status] || 'badge-info';
+      return `<div class="recent-item">
+        <div style="flex:1">
+          <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px">
+            <span style="text-transform:capitalize">${r.status}</span>
+            <strong>${r.count} <span style="color:var(--text-muted);font-weight:400">(${pct}%)</span></strong>
+          </div>
+          <div class="progress-bar"><div class="progress-fill ${cls.replace('badge-','fill-')}" style="width:${pct}%"></div></div>
+        </div>
+      </div>`;
+    }).join('') + `<div style="padding:10px 0 0;font-size:12px;color:var(--text-muted)">Total: ${total} bookings</div>`;
+  } catch(e) {
+    // Fallback
+    const counts = { Pending:0, Confirmed:0, Completed:0, Cancelled:0 };
+    data.bookings.forEach(b => { if(counts[b.status] !== undefined) counts[b.status]++; });
+    const total = data.bookings.length || 1;
+    el.innerHTML = Object.entries(counts).map(([status,cnt]) => {
+      const pct = Math.round((cnt/total)*100);
+      const cls = statusColors[status.toLowerCase()] || 'badge-info';
+      return `<div class="recent-item">
+        <div style="flex:1">
+          <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px">
+            <span>${status}</span>
+            <strong>${cnt} <span style="color:var(--text-muted);font-weight:400">(${pct}%)</span></strong>
+          </div>
+          <div class="progress-bar"><div class="progress-fill ${cls.replace('badge-','fill-')}" style="width:${pct}%"></div></div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
+function renderReports() {
+  const totalRev  = data.bookings.filter(b => b.status !== 'Cancelled').reduce((s,b) => s+b.amount, 0);
+  const completed = data.bookings.filter(b => b.status === 'Completed').length;
+  const avg       = completed ? Math.round(totalRev / completed) : 0;
+
+  document.getElementById('rep-total-rev').textContent  = fmtMoney(totalRev);
+  document.getElementById('rep-completed').textContent  = completed;
+  document.getElementById('rep-avg').textContent        = fmtMoney(avg);
+
+  const byType = {};
+  data.bookings.forEach(b => { byType[b.event] = (byType[b.event]||0)+1; });
+  const total  = data.bookings.length || 1;
+  document.getElementById('rep-by-type').innerHTML = Object.keys(byType).length
+    ? Object.entries(byType).map(([type,cnt]) => `
+        <div style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px"><span>${type}</span><strong>${cnt}</strong></div>
+          <div class="progress-bar"><div class="progress-fill fill-success" style="width:${Math.round(cnt/total*100)}%"></div></div>
+        </div>`).join('')
+    : '<p style="color:var(--text-muted);font-size:14px">No data yet.</p>';
+
+  const good = data.inventory.filter(i => stockStatus(i).key === 'good').length;
+  const low  = data.inventory.filter(i => stockStatus(i).key === 'low').length;
+  const crit = data.inventory.filter(i => stockStatus(i).key === 'critical').length;
+  document.getElementById('rep-stock').innerHTML = `
+    <div class="recent-item"><span>Good Stock</span><span class="badge badge-success">${good} items</span></div>
+    <div class="recent-item"><span>Low Stock</span><span class="badge badge-warning">${low} items</span></div>
+    <div class="recent-item"><span>Critical</span><span class="badge badge-danger">${crit} items</span></div>
+    <div class="recent-item"><span>Total Ingredients</span><strong>${data.inventory.length}</strong></div>`;
+}
+
+// ============================================================
+// CONFIRMATION
+// ============================================================
+function showConfirmation(booking) {
+  const dp      = booking.dp || 0;
+  const balance = booking.amount - dp;
+  const isConfirmed = booking.status === 'Confirmed' || booking.status === 'confirmed';
+  document.getElementById('confirm-box-content').innerHTML = `
+    <div class="confirm-header">Booking Confirmation</div>
+    <div class="confirm-id">REF: ${booking.id} &nbsp;|&nbsp; ${booking.status.toUpperCase()}</div>
+    <div class="confirm-grid">
+      <div class="confirm-field"><label>Client Name</label><p>${booking.client}</p></div>
+      <div class="confirm-field"><label>Contact</label><p>${booking.phone||'—'}</p></div>
+      <div class="confirm-field"><label>Event Type</label><p>${booking.event}</p></div>
+      <div class="confirm-field"><label>Date & Time</label><p>${fmtDate(booking.date)} ${booking.time?'at '+booking.time:''}</p></div>
+      <div class="confirm-field"><label>Venue</label><p>${booking.venue||'TBD'}</p></div>
+      <div class="confirm-field"><label>No. of Guests</label><p>${booking.guests} pax</p></div>
+      <div class="confirm-field"><label>Package</label><p>${booking.package||'TBD'}</p></div>
+      <div class="confirm-field"><label>Down Payment (20%)</label><p>${fmtMoney(dp)}</p></div>
+      ${booking.notes ? `<div class="confirm-field" style="grid-column:1/-1"><label>Special Notes</label><p>${booking.notes}</p></div>` : ''}
+    </div>
+    <div class="confirm-total">
+      <div>
+        <div style="font-size:11px;color:rgba(201,150,58,0.5);letter-spacing:1px;text-transform:uppercase">Total Amount</div>
+        <div class="amount">${fmtMoney(booking.amount)}</div>
+        <div style="font-size:11px;color:rgba(201,150,58,0.5);margin-top:8px;letter-spacing:1px;text-transform:uppercase">Down Payment Paid</div>
+        <div style="font-size:14px;color:rgba(201,150,58,0.7);margin-top:2px">&minus; ${fmtMoney(dp)}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:${isConfirmed?'var(--gold)':'rgba(201,150,58,0.5)'}">${isConfirmed?'Remaining Balance':'Balance Due'}</div>
+        <div style="font-size:${isConfirmed?'28px':'20px'};font-weight:700;color:${isConfirmed?'var(--gold)':'rgba(201,150,58,0.6)'};margin-top:2px">${fmtMoney(balance)}</div>
+        ${isConfirmed?`<div style="font-size:11px;color:var(--muted);margin-top:4px">Due on event day</div>`:''}
+      </div>
+    </div>`;
+  openModal('confirm-modal');
+}
+
+// ============================================================
+// DELETE
+// ============================================================
+async function deleteBooking(idx) {
+  if (!confirm('Delete this booking?')) return;
+  const booking = data.bookings[idx];
+  // If it came from the database, delete it there first so syncFromAPI won't bring it back
+  if (booking.id && booking.id.startsWith('DB-')) {
+    const dbId = booking.id.replace('DB-', '');
+    try {
+      const res = await fetch('http://localhost:3000/bookings/' + dbId, { method: 'DELETE' });
+      if (!res.ok) { notify('Failed to delete from database', '❌'); return; }
+    } catch(e) {
+      notify('Server not connected — cannot delete', '❌'); return;
+    }
+    // Track deleted DB ID so syncFromAPI never re-adds it to Recent Bookings
+    if (!data.deletedBookingIds.includes(booking.id)) data.deletedBookingIds.push(booking.id);
+  }
+  data.bookings.splice(idx, 1); saveData(); renderBookings(); notify('Booking deleted', '🗑️');
+}
+async function removeDashBooking(bookingId) {
+  if (!confirm('Remove this booking from Recent Bookings?')) return;
+  if (bookingId && bookingId.startsWith('DB-')) {
+    if (!data.deletedBookingIds.includes(bookingId)) data.deletedBookingIds.push(bookingId);
+    const dbId = bookingId.replace('DB-', '');
+    try { await fetch('http://localhost:3000/bookings/' + dbId, { method: 'DELETE' }); } catch(e) {}
+  }
+  data.bookings = data.bookings.filter(b => b.id !== bookingId);
+  saveData(); renderDashboard(); notify('Booking removed', '🗑️');
+}
+function deleteIngredient(idx) {
+  if (!confirm('Remove this ingredient?')) return;
+  data.inventory.splice(idx, 1); saveData(); renderInventory(); notify('Ingredient removed', '🗑️');
+}
+async function deleteMenu(id) {
+  if (!confirm('Delete this package?')) return;
+  try {
+    const res = await fetch(`http://localhost:3000/packages/${id}`, { method: 'DELETE' });
+    if (!res.ok) { notify('Failed to delete', '❌'); return; }
+    renderMenuCards();
+    notify('Package deleted', '🗑️');
+  } catch(e) {
+    notify('Server not connected', '❌');
+  }
+}
+async function deleteClient(id) {
+  if (!confirm('Remove this client?')) return;
+  const client = data.clients.find(c => c.id === id);
+  if (client) {
+    const clientBookings = data.bookings.filter(b => b.client.toLowerCase() === client.name.toLowerCase());
+    // Delete DB-backed bookings from the server and record their IDs so syncFromAPI won't re-add them
+    for (const b of clientBookings) {
+      if (b.id && b.id.startsWith('DB-')) {
+        if (!data.deletedBookingIds.includes(b.id)) data.deletedBookingIds.push(b.id);
+        const dbId = b.id.replace('DB-', '');
+        try {
+          await fetch('http://localhost:3000/bookings/' + dbId, { method: 'DELETE' });
+        } catch(e) { /* server offline — continue */ }
+      }
+    }
+    data.bookings = data.bookings.filter(b => b.client.toLowerCase() !== client.name.toLowerCase());
+  }
+  data.clients = data.clients.filter(c => c.id !== id);
+  saveData(); renderClients(); renderDashboard(); notify('Client removed', '🗑️');
+}
+
+// ============================================================
+// CATERING ASSETS & PACKAGES (API-based)
+// ============================================================
+let assetsList    = [];
+let editAssetId   = null;
+let editPackageId = null;
+let packagesList  = [];
+let dishesList    = [];
+let editDishId    = null;
+
+async function fetchAssets() {
+  try {
+    const res = await fetch('http://localhost:3000/assets');
+    if (res.ok) assetsList = await res.json();
+  } catch(e) { assetsList = []; }
+}
+
+async function fetchPackages() {
+  try {
+    const res = await fetch('http://localhost:3000/packages');
+    if (res.ok) packagesList = await res.json();
+  } catch(e) { packagesList = []; }
+}
+
+async function renderAssets() {
+  await fetchAssets();
+  const search = (document.getElementById('asset-search')?.value || '').toLowerCase();
+  const items  = assetsList.filter(a => !search || a.name.toLowerCase().includes(search));
+  document.getElementById('assets-tbody').innerHTML = items.length
+    ? items.map(a => `<tr>
+        <td><strong>${a.name}</strong></td>
+        <td>${a.quantity}</td>
+        <td>${a.unit}</td>
+        <td><div style="display:flex;gap:6px">
+          <button class="btn btn-outline btn-sm" onclick="openAssetModal(${a.id})">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteAsset(${a.id})">Del</button>
+        </div></td>
+      </tr>`).join('')
+    : `<tr><td colspan="4"><div class="empty-state"><div class="empty-icon">🪑</div><p>No assets yet. Add your first catering asset.</p></div></td></tr>`;
+}
+
+function openAssetModal(assetId) {
+  const asset = assetId ? assetsList.find(a => a.id === assetId) : null;
+  editAssetId = assetId || null;
+  document.getElementById('asset-modal-title').textContent = asset ? 'Edit Asset' : 'Add Catering Asset';
+  document.getElementById('ast-name').value = asset ? asset.name     : '';
+  document.getElementById('ast-qty').value  = asset ? asset.quantity : '';
+  document.getElementById('ast-unit').value = asset ? asset.unit     : 'pcs';
+  openModal('asset-modal');
+}
+
+async function saveAsset() {
+  const name     = document.getElementById('ast-name').value.trim();
+  const quantity = document.getElementById('ast-qty').value;
+  const unit     = document.getElementById('ast-unit').value;
+  if (!name || quantity === '') { notify('Fill required fields', '⚠️'); return; }
+  const body = { name, quantity: parseInt(quantity), unit };
+  try {
+    const url    = editAssetId ? `http://localhost:3000/assets/${editAssetId}` : 'http://localhost:3000/assets';
+    const method = editAssetId ? 'PUT' : 'POST';
+    const res    = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    if (!res.ok) { const e = await res.json(); notify(e.error || 'Error saving', '❌'); return; }
+    closeModal('asset-modal');
+    renderAssets();
+    notify(editAssetId ? 'Asset updated!' : 'Asset added!', '✅');
+  } catch(e) { notify('Server not connected', '❌'); }
+}
+
+async function deleteAsset(id) {
+  if (!confirm('Delete this asset?')) return;
+  try {
+    const res = await fetch(`http://localhost:3000/assets/${id}`, { method: 'DELETE' });
+    if (!res.ok) { notify('Failed to delete', '❌'); return; }
+    renderAssets();
+    notify('Asset deleted', '🗑️');
+  } catch(e) { notify('Server not connected', '❌'); }
+}
+
+function getSelectedAssetIds(excludeSelect) {
+  return Array.from(document.querySelectorAll('#mn-assets-container .asset-row-select'))
+    .filter(s => s !== excludeSelect && s.value)
+    .map(s => parseInt(s.value));
+}
+
+function refreshAssetDropdowns() {
+  const selects = Array.from(document.querySelectorAll('#mn-assets-container .asset-row-select'));
+  selects.forEach(sel => {
+    const otherSelected = selects
+      .filter(s => s !== sel && s.value)
+      .map(s => parseInt(s.value));
+    Array.from(sel.options).forEach(opt => {
+      if (!opt.value) return;
+      opt.disabled = otherSelected.includes(parseInt(opt.value));
+    });
+  });
+}
+
+function assetRowHtml(assetId, qty) {
+  const alreadySelected = Array.from(document.querySelectorAll('#mn-assets-container .asset-row-select'))
+    .filter(s => s.value)
+    .map(s => parseInt(s.value));
+  const options = assetsList.map(a => {
+    const isChosen   = a.id == assetId;
+    const isDisabled = !isChosen && alreadySelected.includes(a.id);
+    return `<option value="${a.id}" ${isChosen ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}>${a.name} (${a.unit})</option>`;
+  }).join('');
+  return `<div class="asset-row" style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+    <select class="asset-row-select" onchange="refreshAssetDropdowns()" style="flex:1;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:#fff;color:var(--dark)">
+      <option value="">Select asset...</option>${options}
+    </select>
+    <input type="number" class="asset-row-qty" min="1" value="${qty || 1}" placeholder="Qty" style="width:70px;padding:8px;border:1px solid var(--border);border-radius:6px;font-size:13px;text-align:center">
+    <button type="button" class="btn btn-danger btn-sm" onclick="removeAssetRow(this)" style="flex-shrink:0;padding:8px 10px">✕</button>
+  </div>`;
+}
+
+function addAssetRow(assetId, qty) {
+  if (!assetsList.length) { notify('Add catering assets first in the Catering Assets section', '⚠️'); return; }
+  document.getElementById('mn-assets-container').insertAdjacentHTML('beforeend', assetRowHtml(assetId, qty));
+  updateAssetEmptyMsg();
+}
+
+function removeAssetRow(btn) {
+  btn.closest('.asset-row').remove();
+  updateAssetEmptyMsg();
+  refreshAssetDropdowns();
+}
+
+function updateAssetEmptyMsg() {
+  const container = document.getElementById('mn-assets-container');
+  const empty     = document.getElementById('mn-assets-empty');
+  if (empty) empty.style.display = container.children.length ? 'none' : 'block';
+}
+
+// ============================================================
+// DISHES (API-based)
+// ============================================================
+async function fetchDishes() {
+  try {
+    const res = await fetch('http://localhost:3000/dishes');
+    if (res.ok) dishesList = await res.json();
+  } catch(e) { dishesList = []; }
+}
+
+async function renderDishes() {
+  await fetchDishes();
+  const search = (document.getElementById('dish-search')?.value || '').toLowerCase();
+  const items  = dishesList.filter(d => !search || d.name.toLowerCase().includes(search) || d.category.toLowerCase().includes(search));
+  document.getElementById('dishes-tbody').innerHTML = items.length
+    ? items.map(d => `<tr>
+        <td><strong>${d.name}</strong></td>
+        <td><span class="badge badge-info" style="font-size:11px">${d.category}</span></td>
+        <td><div style="display:flex;gap:6px">
+          <button class="btn btn-outline btn-sm" onclick="openDishModal(${d.id})">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteDish(${d.id})">Del</button>
+        </div></td>
+      </tr>`).join('')
+    : `<tr><td colspan="3"><div class="empty-state"><div class="empty-icon">🍜</div><p>No dishes yet. Add your first dish.</p></div></td></tr>`;
+}
+
+function openDishModal(dishId) {
+  const dish = dishId ? dishesList.find(d => d.id === dishId) : null;
+  editDishId = dishId || null;
+  document.getElementById('dish-modal-title').textContent = dish ? 'Edit Dish' : 'Add Dish';
+  document.getElementById('dsh-name').value = dish ? dish.name     : '';
+  document.getElementById('dsh-cat').value  = dish ? dish.category : 'Main Course';
+  openModal('dish-modal');
+}
+
+async function saveDish() {
+  const name     = document.getElementById('dsh-name').value.trim();
+  const category = document.getElementById('dsh-cat').value;
+  if (!name) { notify('Dish name is required', '⚠️'); return; }
+  const body = { name, category };
+  try {
+    const url    = editDishId ? `http://localhost:3000/dishes/${editDishId}` : 'http://localhost:3000/dishes';
+    const method = editDishId ? 'PUT' : 'POST';
+    const res    = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    if (!res.ok) { const e = await res.json(); notify(e.error || 'Error saving', '❌'); return; }
+    closeModal('dish-modal');
+    renderDishes();
+    notify(editDishId ? 'Dish updated!' : 'Dish added!', '✅');
+  } catch(e) { notify('Server not connected', '❌'); }
+}
+
+async function deleteDish(id) {
+  if (!confirm('Delete this dish? It will be removed from all packages.')) return;
+  try {
+    const res = await fetch(`http://localhost:3000/dishes/${id}`, { method: 'DELETE' });
+    if (!res.ok) { notify('Failed to delete', '❌'); return; }
+    renderDishes();
+    notify('Dish deleted', '🗑️');
+  } catch(e) { notify('Server not connected', '❌'); }
+}
+
+// ---- Dish rows inside the package modal ----
+function refreshDishDropdowns() {
+  const selects = Array.from(document.querySelectorAll('#mn-dishes-container .dish-row-select'));
+  selects.forEach(sel => {
+    const otherSelected = selects
+      .filter(s => s !== sel && s.value)
+      .map(s => parseInt(s.value));
+    Array.from(sel.options).forEach(opt => {
+      if (!opt.value) return;
+      opt.disabled = otherSelected.includes(parseInt(opt.value));
+    });
+  });
+}
+
+function dishRowHtml(dishId) {
+  const alreadySelected = Array.from(document.querySelectorAll('#mn-dishes-container .dish-row-select'))
+    .filter(s => s.value)
+    .map(s => parseInt(s.value));
+  const grouped = {};
+  dishesList.forEach(d => {
+    if (!grouped[d.category]) grouped[d.category] = [];
+    grouped[d.category].push(d);
+  });
+  const options = Object.entries(grouped).map(([cat, items]) =>
+    `<optgroup label="${cat}">${items.map(d => {
+      const isChosen   = d.id == dishId;
+      const isDisabled = !isChosen && alreadySelected.includes(d.id);
+      return `<option value="${d.id}" ${isChosen ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}>${d.name}</option>`;
+    }).join('')}</optgroup>`
+  ).join('');
+  return `<div class="dish-row" style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+    <select class="dish-row-select" onchange="refreshDishDropdowns()" style="flex:1;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:#fff;color:var(--dark)">
+      <option value="">Select dish...</option>${options}
+    </select>
+    <button type="button" class="btn btn-danger btn-sm" onclick="removeDishRow(this)" style="flex-shrink:0;padding:8px 10px">✕</button>
+  </div>`;
+}
+
+function addDishRow(dishId) {
+  if (!dishesList.length) { notify('Add dishes first in the Dishes section', '⚠️'); return; }
+  document.getElementById('mn-dishes-container').insertAdjacentHTML('beforeend', dishRowHtml(dishId));
+  updateDishEmptyMsg();
+}
+
+function removeDishRow(btn) {
+  btn.closest('.dish-row').remove();
+  updateDishEmptyMsg();
+  refreshDishDropdowns();
+}
+
+function updateDishEmptyMsg() {
+  const container = document.getElementById('mn-dishes-container');
+  const empty     = document.getElementById('mn-dishes-empty');
+  if (empty) empty.style.display = container.children.length ? 'none' : 'block';
+}
+
+// ---- Freebie rows inside the package modal ----
+function freebieRowHtml(name) {
+  return `<div class="freebie-row" style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+    <input type="text" class="freebie-row-input" value="${name || ''}" placeholder="e.g. Free Flowing Drinks" style="flex:1;padding:8px 10px;border:1.5px solid var(--gold);border-radius:6px;font-size:13px;background:#fff;color:var(--dark)">
+    <button type="button" class="btn btn-danger btn-sm" onclick="removeFreebieRow(this)" style="flex-shrink:0;padding:8px 10px">✕</button>
+  </div>`;
+}
+
+function addFreebieRow(name) {
+  document.getElementById('mn-freebies-container').insertAdjacentHTML('beforeend', freebieRowHtml(name || ''));
+  updateFreebieEmptyMsg();
+}
+
+function removeFreebieRow(btn) {
+  btn.closest('.freebie-row').remove();
+  updateFreebieEmptyMsg();
+}
+
+function updateFreebieEmptyMsg() {
+  const container = document.getElementById('mn-freebies-container');
+  const empty     = document.getElementById('mn-freebies-empty');
+  if (empty) empty.style.display = container.children.length ? 'none' : 'block';
+}
+
+// ============================================================
+// CALENDAR
+// ============================================================
+let calYear  = new Date().getFullYear();
+let calMonth = new Date().getMonth(); // 0-based
+let calSelectedDate = null; // persists across re-renders
+
+// Returns ALL bookings grouped by date string 'YYYY-MM-DD'
+function calBookingsByDate() {
+  const map = {};
+  data.bookings.forEach(b => {
+    if (!b.date) return;
+    const d = b.date.split('T')[0];
+    if (!map[d]) map[d] = [];
+    map[d].push(b);
+  });
+  return map;
+}
+
+function renderCalendar() {
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('cal-month-label').textContent = `${monthNames[calMonth]} ${calYear}`;
+
+  const byDate  = calBookingsByDate();
+  const grid    = document.getElementById('cal-grid');
+  const dayLabels = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  let html = dayLabels.map(d => `<div class="cal-day-label">${d}</div>`).join('');
+
+  const firstDay    = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const now      = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+
+  for (let i = 0; i < firstDay; i++) html += '<div></div>';
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${calYear}-${String(calMonth + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dayBkgs = byDate[dateStr] || [];
+    const isToday    = dateStr === todayStr;
+    const isSelected = dateStr === calSelectedDate;
+
+    const hasConfirmed = dayBkgs.some(b => b.status === 'Confirmed'  || b.status === 'confirmed');
+    const hasPending   = dayBkgs.some(b => b.status === 'Pending'    || b.status === 'pending');
+    const hasCompleted = dayBkgs.some(b => b.status === 'Completed'  || b.status === 'completed');
+
+    let cls = 'cal-cell';
+    if (isToday)    cls += ' cal-today';
+    if (isSelected) cls += ' cal-selected';
+    else if (hasConfirmed)  cls += ' cal-confirmed';
+    else if (hasPending)    cls += ' cal-pending';
+    else if (hasCompleted)  cls += ' cal-completed';
+
+    let dots = '';
+    if (hasConfirmed) dots += `<span class="cal-dot dot-confirmed" title="Confirmed"></span>`;
+    if (hasPending)   dots += `<span class="cal-dot dot-pending"   title="Pending"></span>`;
+    if (hasCompleted) dots += `<span class="cal-dot dot-completed" title="Completed"></span>`;
+
+    html += `<div class="${cls}" onclick="calSelectDay('${dateStr}')">
+      <span class="cal-num">${d}</span>
+      <div class="cal-dots">${dots}</div>
+    </div>`;
+  }
+
+  grid.innerHTML = html;
+  if (calSelectedDate) calSelectDay(calSelectedDate);
+}
+
+function calPrevMonth() {
+  calMonth--;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+}
+function calNextMonth() {
+  calMonth++;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCalendar();
+}
+
+function calSelectDay(dateStr) {
+  calSelectedDate = dateStr;
+  document.querySelectorAll('.cal-cell').forEach(c => c.classList.remove('cal-selected'));
+  document.querySelectorAll('.cal-cell').forEach(c => {
+    if (c.getAttribute('onclick') === `calSelectDay('${dateStr}')`) c.classList.add('cal-selected');
+  });
+
+  const byDate = calBookingsByDate();
+  const bkgs   = byDate[dateStr] || [];
+  const label  = new Date(dateStr + 'T00:00:00').toLocaleDateString('en-PH', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+  document.getElementById('cal-detail-title').textContent = label;
+
+  if (!bkgs.length) {
+    document.getElementById('cal-detail-list').innerHTML = '<p style="font-size:13px;color:var(--text-muted);padding:8px 0">No bookings on this date.</p>';
+    return;
+  }
+
+  const statusColor = { Confirmed:'var(--gold)', Pending:'var(--warning)', Completed:'var(--success)', Cancelled:'var(--danger)', confirmed:'var(--gold)', pending:'var(--warning)', completed:'var(--success)', cancelled:'var(--danger)' };
+  document.getElementById('cal-detail-list').innerHTML = bkgs.map(b => {
+    const realIdx  = data.bookings.indexOf(b);
+    const isDone   = b.status === 'Completed' || b.status === 'completed';
+    const isCancelled = b.status === 'Cancelled' || b.status === 'cancelled';
+    return `<div class="cal-booking-item">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div>
+          <div style="font-weight:600;font-size:14px;color:var(--dark)">${b.client}</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px">${b.event} &bull; ${b.package || 'No package'}</div>
+          <div style="font-size:12px;color:var(--text-muted)">${b.guests ? b.guests + ' guests' : ''} ${b.time ? '&bull; ' + b.time : ''}</div>
+          <div style="font-size:12px;color:var(--text-muted)">${b.venue || ''}</div>
+        </div>
+        <span style="font-size:11px;font-weight:600;color:${statusColor[b.status]||'var(--text-muted)'};white-space:nowrap">${b.status}</span>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+        ${realIdx >= 0 ? `<button class="btn btn-outline btn-sm" style="flex:1;font-size:11px" onclick="openBookingModal(${realIdx})">View / Edit</button>` : ''}
+        ${!isDone && !isCancelled && realIdx >= 0 ? `<button class="btn btn-success btn-sm" style="flex:1;font-size:11px" onclick="calMarkDone(${realIdx})">&#10003; Mark Done</button>` : ''}
+        ${isDone ? `<div style="font-size:12px;color:var(--success);font-weight:600;padding:4px 0">&#10003; Completed</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function calMarkDone(idx) {
+  const booking = data.bookings[idx];
+  if (!booking) return;
+  if (!confirm(`Mark "${booking.client}" booking as Completed?`)) return;
+
+  // If DB booking, update via API
+  if (booking.id && booking.id.startsWith('DB-')) {
+    const dbId = booking.id.replace('DB-', '');
+    try {
+      const res = await fetch(`http://localhost:3000/bookings/${dbId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'completed' })
+      });
+      if (!res.ok) { notify('Failed to update on server', '❌'); return; }
+    } catch(e) {
+      notify('Server not connected', '❌'); return;
+    }
+  }
+
+  data.bookings[idx].status = 'Completed';
+  // Auto-register client in Client Records
+  const bk = data.bookings[idx];
+  if (!data.clients.find(c => c.name.toLowerCase() === bk.client.toLowerCase())) {
+    data.clients.push({ id: uid('CL'), name: bk.client, phone: bk.phone||'', email: bk.email||'', address: '' });
+  }
+  saveData();
+  notify(`${booking.client}'s booking moved to Client Records`, '\u2705');
+
+  // Refresh calendar — calSelectedDate persists so detail panel re-renders
+  renderCalendar();
+}
+function notify(msg, icon) {
+  const el = document.getElementById('notif');
+  document.getElementById('notif-msg').textContent  = msg;
+  document.getElementById('notif-icon').textContent = icon || '✅';
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === this) closeModal(this.id);
+  });
+});
+
+// ============================================================
+// INIT
+// ============================================================
+fetchPackages().then(() => syncFromAPI()).then(() => {
+  renderDashboard();
+  loadEventNotifications();
+});
+</script>
+</body>
+</html>

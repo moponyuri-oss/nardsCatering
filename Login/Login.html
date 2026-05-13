@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nards Catering — Admin Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="Login.css">
+</head>
+<body>
+
+<div class="login-card">
+
+  <div class="brand">
+    <div class="brand-logo">Nards<span>.</span></div>
+    <div class="brand-sub">Catering Services</div>
+    <div class="brand-divider"></div>
+  </div>
+
+  <div class="login-heading">Admin Sign In</div>
+  <div class="login-sub">Enter your credentials to access the dashboard.</div>
+
+  <div class="error-msg" id="error-msg">
+    <span>🔒</span>
+    <span id="error-text">Incorrect username or password.</span>
+  </div>
+
+  <form id="loginForm" autocomplete="off">
+    <div class="form-group">
+      <label for="username">Username</label>
+      <div class="input-wrap">
+        <input type="text" id="username" name="username"
+          placeholder="Enter your username" autocomplete="username" required>
+        <span class="input-icon">👤</span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <div class="input-wrap">
+        <input type="password" id="password" name="password"
+          placeholder="Enter your password" autocomplete="current-password" required>
+        <button type="button" class="toggle-pw" id="togglePw" title="Show/hide password">👁</button>
+      </div>
+    </div>
+    <button type="submit" class="btn-login" id="loginBtn">Sign In</button>
+  </form>
+
+  
+</div>
+
+<script>
+  const VALID_USERNAME = 'admin';
+  const VALID_PASSWORD = 'nards2024';
+
+  // FIX 1: If already logged in, skip straight to dashboard
+  if (sessionStorage.getItem('nards_admin_auth') === 'true') {
+    window.location.href = '/admin';
+  }
+
+  const form       = document.getElementById('loginForm');
+  const usernameEl = document.getElementById('username');
+  const passwordEl = document.getElementById('password');
+  const errorMsg   = document.getElementById('error-msg');
+  const errorText  = document.getElementById('error-text');
+  const loginBtn   = document.getElementById('loginBtn');
+  const togglePw   = document.getElementById('togglePw');
+
+  togglePw.addEventListener('click', () => {
+    const hidden = passwordEl.type === 'password';
+    passwordEl.type = hidden ? 'text' : 'password';
+    togglePw.textContent = hidden ? '🙈' : '👁';
+    passwordEl.focus();
+  });
+
+  [usernameEl, passwordEl].forEach(inp => {
+    inp.addEventListener('input', () => {
+      inp.classList.remove('error');
+      errorMsg.classList.remove('show');
+    });
+  });
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const username = usernameEl.value.trim();
+    const password = passwordEl.value;
+
+    loginBtn.disabled = true;
+    loginBtn.innerHTML = '<span class="spinner"></span>Signing in...';
+
+    setTimeout(() => {
+      if (username === VALID_USERNAME && password === VALID_PASSWORD) {
+        // FIX 1: Write auth session before redirecting
+        sessionStorage.setItem('nards_admin_auth', 'true');
+        loginBtn.innerHTML = '✅ Redirecting...';
+        setTimeout(() => { window.location.href = '/admin'; }, 400);
+      } else {
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = 'Sign In';
+
+        if (username !== VALID_USERNAME) {
+          usernameEl.classList.add('error');
+          errorText.textContent = 'Username not recognized.';
+        } else {
+          passwordEl.classList.add('error');
+          errorText.textContent = 'Incorrect password. Please try again.';
+        }
+
+        errorMsg.classList.add('show');
+        const card = document.querySelector('.login-card');
+        card.classList.remove('shake');
+        void card.offsetWidth;
+        card.classList.add('shake');
+        passwordEl.value = '';
+        passwordEl.focus();
+      }
+    }, 700);
+  });
+</script>
+</body>
+</html>

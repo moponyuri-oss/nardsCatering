@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nards Catering — Premium Catering & Event Services</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="Style.css">
+</head>
+<body>
+
+<!-- MOBILE NAV -->
+<nav id="main-nav">
+  <a href="#home" class="nav-logo">Nards<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="#home">Home</a></li>
+    <li><a href="#offers">Packages</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#calendar">Availability</a></li>
+    <li><a href="#inquiry">Book</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <button class="nav-cta" onclick="location.href='#inquiry'">Book Now</button>
+  <button class="nav-toggle" id="nav-toggle" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="mobile-nav" id="mobile-nav">
+  <a href="#home"    onclick="closeMobileNav()">Home</a>
+  <a href="#offers"  onclick="closeMobileNav()">Packages</a>
+  <a href="#services" onclick="closeMobileNav()">Services</a>
+  <a href="#calendar" onclick="closeMobileNav()">Availability</a>
+  <a href="#inquiry" onclick="closeMobileNav()">Book Now</a>
+  <a href="#contact" onclick="closeMobileNav()">Contact</a>
+  <a href="#inquiry" class="mobile-nav-cta" onclick="closeMobileNav()">Book an Event</a>
+</div>
+
+<!-- HOME -->
+<section id="home">
+  <div class="hero-left">
+    <p class="hero-tag">Premium Catering &amp; Event Setup</p>
+    <h1 class="hero-h1">
+      Serving Taste,<br>
+      <em>Styling Moments.</em>
+    </h1>
+    <p class="hero-desc">
+      Nard's Catering is a catering and event setup business based in Cainta, Rizal, established in 2018.
+      Offering affordable and elegant food services and event styling for weddings, birthdays, christenings, and other special occasions.
+    </p>
+    <div class="hero-actions">
+      <button class="btn-hero-primary" onclick="location.href='#inquiry'">&#9993; Book an Event</button>
+      <button class="btn-hero-secondary" onclick="location.href='#offers'">View Packages</button>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="hero-stat-num">6+</div>
+        <div class="hero-stat-label">Years Experience</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">500+</div>
+        <div class="hero-stat-label">Events Served</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-img-wrapper">
+    <div class="food-gallery">
+      <div class="food-item">
+        <img src="https://images.pexels.com/photos/33712072/pexels-photo-33712072.jpeg" class="food-img" alt="Lumpia">
+        <div class="food-label">Lumpia</div>
+      </div>
+      <div class="food-item">
+        <img src="https://images.pexels.com/photos/19264278/pexels-photo-19264278.jpeg" class="food-img" alt="Pasta">
+        <div class="food-label">Pasta</div>
+      </div>
+      <div class="food-item">
+        <img src="https://images.pexels.com/photos/7455911/pexels-photo-7455911.png?auto=compress&cs=tinysrgb&w=500&h=500&fit=crop" class="food-img" alt="Menudo">
+        <div class="food-label">Menudo</div>
+      </div>
+      <div class="food-item">
+        <img src="https://images.pexels.com/photos/8625451/pexels-photo-8625451.jpeg" class="food-img" alt="Hamonado">
+        <div class="food-label">Hamonado</div>
+      </div>
+      <div class="food-item">
+        <img src="https://images.pexels.com/photos/5802059/pexels-photo-5802059.jpeg" class="food-img" alt="Lechon">
+        <div class="food-label">Lechon</div>
+      </div>
+      <div class="food-item">
+        <img src="https://images.pexels.com/photos/5724558/pexels-photo-5724558.jpeg" class="food-img" alt="Pancit">
+        <div class="food-label">Pancit</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PACKAGES -->
+<section id="offers">
+  <div class="section-inner">
+    <span class="section-badge reveal">Our Packages</span>
+    <h2 class="section-heading reveal reveal-delay-1">Food <em>Offerings &amp; Setups</em></h2>
+    <p class="section-sub reveal reveal-delay-2">Choose from our carefully crafted catering packages designed to make your event unforgettable.</p>
+    <div class="gold-line reveal reveal-delay-3"></div>
+
+    <div class="promo-section">
+      <h4>Available Packages</h4>
+      <div id="packages-grid" class="promo-packages">
+        <div style="grid-column:1/-1;text-align:center;color:rgba(201,150,58,0.6);padding:32px;font-size:15px">Loading packages...</div>
+      </div>
+    </div>
+
+
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="section-inner">
+    <span class="section-badge reveal">What We Serve</span>
+    <h2 class="section-heading reveal reveal-delay-1">Tailored <em>Events</em></h2>
+    <p class="section-sub reveal reveal-delay-2">From intimate gatherings to grand celebrations, we bring elegance and flavor to every occasion.</p>
+    <div class="gold-line reveal reveal-delay-3"></div>
+
+    <div class="offer-list">
+      <div class="offer-card reveal reveal-delay-1">
+        <img src="https://images.pexels.com/photos/35985211/pexels-photo-35985211.jpeg" class="event-img" alt="Christenings">
+        <p>Christenings</p>
+      </div>
+      <div class="offer-card reveal reveal-delay-2">
+        <img src="https://images.pexels.com/photos/35342607/pexels-photo-35342607.jpeg" class="event-img" alt="Birthdays">
+        <p>Birthdays</p>
+      </div>
+      <div class="offer-card reveal reveal-delay-3">
+        <img src="https://images.pexels.com/photos/29655731/pexels-photo-29655731.jpeg" class="event-img" alt="Weddings">
+        <p>Weddings</p>
+      </div>
+      <div class="offer-card reveal reveal-delay-4">
+        <img src="https://images.pexels.com/photos/11282245/pexels-photo-11282245.jpeg" class="event-img" alt="Parties">
+        <p>Parties</p>
+      </div>
+      <div class="offer-card reveal reveal-delay-5">
+        <img src="https://images.pexels.com/photos/15031843/pexels-photo-15031843.jpeg" class="event-img" alt="House Blessing">
+        <p>House Blessing</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AVAILABILITY CALENDAR -->
+<section id="calendar">
+  <div class="section-inner">
+    <span class="section-badge reveal">Check Availability</span>
+    <h2 class="section-heading reveal reveal-delay-1">Event <em>Calendar</em></h2>
+    <p class="section-sub reveal reveal-delay-2">Dates highlighted in gold are already booked. Choose an available date and reserve your event.</p>
+    <div class="gold-line reveal reveal-delay-3"></div>
+
+    <div class="cust-cal-layout reveal reveal-delay-4">
+      <!-- Month grid -->
+      <div class="cust-cal-card">
+        <div class="cust-cal-nav">
+          <button class="cust-cal-btn" onclick="custCalPrev()" aria-label="Previous month">&#8249;</button>
+          <span id="cust-cal-month-label"></span>
+          <button class="cust-cal-btn" onclick="custCalNext()" aria-label="Next month">&#8250;</button>
+        </div>
+        <div class="cust-cal-grid" id="cust-cal-grid"></div>
+      </div>
+
+      <!-- Side panel: legend + day detail -->
+      <div class="cust-cal-info">
+        <div class="cust-cal-legend">
+          <div class="cust-leg-item"><div class="cust-leg-dot dot-booked"></div> Booked / Unavailable</div>
+          <div class="cust-leg-item"><div class="cust-leg-dot dot-today"></div> Today</div>
+          <div class="cust-leg-item"><div class="cust-leg-dot dot-avail"></div> Available</div>
+        </div>
+        <div id="cust-cal-detail">
+          <p>Click a date to check availability.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INQUIRY / BOOKING FORM -->
+<section id="inquiry">
+  <div class="section-inner">
+    <span class="section-badge reveal">Book Your Event</span>
+    <h2 class="section-heading reveal reveal-delay-1">Booking <em>Form</em></h2>
+    <p class="section-sub reveal reveal-delay-2">Fill in the details below and our team will confirm your reservation within 24 hours.</p>
+    <div class="gold-line reveal reveal-delay-3"></div>
+
+    <div class="inquiry-form-wrapper reveal reveal-delay-4">
+      <form id="inquiryForm" class="inquiry-form">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="clientName" placeholder="Your full name" required>
+          </div>
+          <div class="form-group">
+            <label for="address">Venue / Address</label>
+            <input type="text" id="address" name="address" placeholder="Event venue address" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="yourname@email.com">
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" placeholder="+63 9XX XXX XXXX" required
+              pattern="[+]?[0-9][\d\s\-()]{6,14}"
+              title="Phone number must contain only digits, spaces, dashes, or parentheses"
+              oninput="this.value=this.value.replace(/[^+\d\s\-()]/g,'')">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="event-type">Event Type</label>
+            <select id="event-type" name="eventType" required>
+              <option value="">Select event type...</option>
+              <option value="christening">Christening</option>
+              <option value="birthday">Birthday Party</option>
+              <option value="wedding">Wedding</option>
+              <option value="party">Party</option>
+              <option value="house blessing">House Blessing</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="guest-count">Package</label>
+            <select id="guest-count" name="package" required>
+              <option value="">Select a package...</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="event-date">Event Date</label>
+            <input type="date" id="event-date" name="eventDate" required>
+          </div>
+        </div>
+
+        <div class="payment-info" id="payment-info-box" style="display:none">
+          <p id="totalPrice">Total Price: &#8369;0</p>
+          <p id="downPayment">Down Payment (20%): &#8369;0</p>
+        </div>
+
+        <div class="form-group suggestion-group">
+          <label for="notes">Special Requests / Notes</label>
+          <textarea id="notes" name="notes" placeholder="e.g. dietary restrictions, theme preferences, special setup requests, allergies..."></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="submit-btn" id="submit-btn">
+            <span class="btn-text">&#9993; Send Booking Request</span>
+          </button>
+        </div>
+        <p id="form-message" class="form-message"></p>
+
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-inner">
+    <span class="section-badge reveal">Get In Touch</span>
+    <h2 class="section-heading reveal reveal-delay-1">Keep in <em>Touch</em></h2>
+    <p class="section-sub reveal reveal-delay-2">We'd love to hear from you. Reach out to discuss your next event.</p>
+    <div class="gold-line reveal reveal-delay-3"></div>
+
+    <div class="contact-grid">
+      <div class="contact-info">
+        <div class="contact-item reveal reveal-delay-1">
+          <div class="contact-icon">&#128140;</div>
+          <div>
+            <div class="contact-detail-label">Email</div>
+            <div class="contact-detail-value">nardscatering@gmail.com</div>
+          </div>
+        </div>
+        <div class="contact-item reveal reveal-delay-2">
+          <div class="contact-icon">&#128241;</div>
+          <div>
+            <div class="contact-detail-label">Phone</div>
+            <div class="contact-detail-value">+63 XXX XXX XXXX</div>
+          </div>
+        </div>
+        <div class="contact-item reveal reveal-delay-3">
+          <div class="contact-icon">&#128205;</div>
+          <div>
+            <div class="contact-detail-label">Location</div>
+            <div class="contact-detail-value">Cainta, Rizal, Philippines</div>
+          </div>
+        </div>
+        <div class="contact-item reveal reveal-delay-4">
+          <div class="contact-icon">&#128336;</div>
+          <div>
+            <div class="contact-detail-label">Business Hours</div>
+            <div class="contact-detail-value">Mon – Sat, 8:00 AM – 6:00 PM</div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal reveal-delay-2">
+        <div class="contact-map-placeholder">
+          <div class="map-icon">&#128205;</div>
+          <span>Cainta, Rizal</span>
+          <span style="font-size:12px;opacity:.6">Metro Manila, Philippines</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="site-footer">
+  <div class="footer-logo">Nards<span>.</span></div>
+  <p class="footer-copy">&#169; 2026 Nards Catering. All rights reserved.</p>
+  <ul class="footer-links">
+    <li><a href="#home">Home</a></li>
+    <li><a href="#offers">Packages</a></li>
+    <li><a href="#inquiry">Book</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</footer>
+
+<!-- Scroll to top -->
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Scroll to top">&#8679;</button>
+
+<script>
+// ============================================================
+// NAV SCROLL + MOBILE
+// ============================================================
+const mainNav = document.getElementById('main-nav');
+const mobileNav = document.getElementById('mobile-nav');
+const navToggle = document.getElementById('nav-toggle');
+const scrollTopBtn = document.getElementById('scrollTop');
+
+window.addEventListener('scroll', () => {
+  mainNav.classList.toggle('scrolled', window.scrollY > 60);
+  scrollTopBtn.classList.toggle('show', window.scrollY > 400);
+});
+
+navToggle.addEventListener('click', () => {
+  mobileNav.classList.toggle('open');
+});
+
+function closeMobileNav() {
+  mobileNav.classList.remove('open');
+}
+
+// Close mobile nav on outside click
+document.addEventListener('click', (e) => {
+  if (!mainNav.contains(e.target) && !mobileNav.contains(e.target)) {
+    mobileNav.classList.remove('open');
+  }
+});
+
+// ============================================================
+// SCROLL REVEAL
+// ============================================================
+const revealEls = document.querySelectorAll('.reveal');
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12 });
+revealEls.forEach(el => revealObserver.observe(el));
+
+// ============================================================
+// PACKAGES — load from database
+// ============================================================
+let customerPackages = [];
+
+async function loadPackages() {
+  try {
+    const res = await fetch('http://localhost:3000/packages');
+    if (!res.ok) throw new Error();
+    customerPackages = await res.json();
+  } catch(e) {
+    customerPackages = [];
+  }
+
+  const grid = document.getElementById('packages-grid');
+  if (!customerPackages.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:rgba(201,150,58,0.6);padding:32px">No packages available yet.</div>';
+  } else {
+    grid.innerHTML = customerPackages.map((p, i) => {
+      const featured = i === customerPackages.length - 1 ? ' featured' : '';
+
+      const assetStrip = (p.assets || []).length
+        ? `<div class="pkg-assets-strip">
+            ${(p.assets||[]).map(a=>`<div class="pkg-asset-item"><span class="pkg-asset-qty">${a.qty_required}</span><span class="pkg-asset-name">&nbsp;${a.name}</span></div>`).join('')}
+           </div>` : '';
+
+      const freebieStrip = (p.freebies || []).length
+        ? `<div class="pkg-freebies-strip">
+            ${(p.freebies||[]).map(f=>`<span class="pkg-freebie-tag">&#10003; ${f.name}</span>`).join('')}
+           </div>` : '';
+
+      const dishMap = {};
+      (p.dishes || []).forEach(d => {
+        if (!dishMap[d.category]) dishMap[d.category] = [];
+        dishMap[d.category].push(d.name);
+      });
+      const dishHtml = Object.keys(dishMap).length
+        ? `<div class="pkg-section-label">&#127869; What's Included</div>
+           <div class="pkg-dish-grid">
+             ${Object.entries(dishMap).map(([cat,names])=>
+               `<div class="pkg-dish-group">
+                  <div class="pkg-dish-cat">${cat}</div>
+                  ${names.map(n=>`<div class="pkg-dish-item">&bull; ${n}</div>`).join('')}
+                </div>`).join('')}
+           </div>`
+        : '<div class="pkg-dish-empty">&#127869; Menu details coming soon</div>';
+
+      return `<div class="promo-package${featured}">
+        <div class="promo-header">
+          <span class="pax">${p.name}</span>
+          <span class="price">&#8369;${Number(p.price).toLocaleString('en-PH')}</span>
+        </div>
+        <div class="pkg-min-guests">Min. ${p.min_guests} guests</div>
+        ${assetStrip}
+        ${freebieStrip}
+        <div class="pkg-divider"></div>
+        <div class="pkg-dishes-section">${dishHtml}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Populate booking package select
+  const sel = document.getElementById('guest-count');
+  sel.innerHTML = '<option value="">Select a package...</option>' +
+    customerPackages.map(p =>
+      `<option value="${p.name}" data-price="${p.price}">${p.name} — Min. ${p.min_guests} guests (&#8369;${Number(p.price).toLocaleString('en-PH')})</option>`
+    ).join('');
+}
+
+// PRICE display on package select
+const packageSelect = document.getElementById('guest-count');
+const totalPriceEl  = document.getElementById('totalPrice');
+const downPayEl     = document.getElementById('downPayment');
+const payInfoBox    = document.getElementById('payment-info-box');
+
+packageSelect.addEventListener('change', function() {
+  const selected = this.options[this.selectedIndex];
+  const price    = parseFloat(selected?.dataset?.price || 0);
+  if (!price) {
+    payInfoBox.style.display = 'none';
+    return;
+  }
+  payInfoBox.style.display = 'flex';
+  totalPriceEl.textContent = 'Total Price: \u20b1' + price.toLocaleString('en-PH');
+  downPayEl.textContent    = 'Down Payment (20%): \u20b1' + (price * 0.2).toLocaleString('en-PH');
+});
+
+loadPackages();
+
+// ============================================================
+// AVAILABILITY CALENDAR
+// ============================================================
+let custCalYear  = new Date().getFullYear();
+let custCalMonth = new Date().getMonth();
+let custCalBookedDates = new Set();  // 'YYYY-MM-DD' of confirmed bookings
+let custCalAllBookings = [];         // full rows for detail panel
+
+function custCalTodayStr() {
+  const n = new Date();
+  return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
+}
+
+async function loadCustCalBookings() {
+  try {
+    const res = await fetch('http://localhost:3000/bookings');
+    if (!res.ok) throw new Error();
+    custCalAllBookings = await res.json();
+    custCalBookedDates = new Set(
+      custCalAllBookings
+        .filter(r => (r.status || '').toLowerCase() === 'confirmed')
+        .map(r => r.eventDate ? r.eventDate.split('T')[0] : '')
+        .filter(Boolean)
+    );
+  } catch(e) {
+    custCalAllBookings = [];
+    custCalBookedDates = new Set();
+  }
+  renderCustCalendar();
+}
+
+function renderCustCalendar() {
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('cust-cal-month-label').textContent = `${monthNames[custCalMonth]} ${custCalYear}`;
+
+  const grid    = document.getElementById('cust-cal-grid');
+  const dayLabels = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  let html = dayLabels.map(d => `<div class="cust-cal-day-label">${d}</div>`).join('');
+
+  const firstDay    = new Date(custCalYear, custCalMonth, 1).getDay();
+  const daysInMonth = new Date(custCalYear, custCalMonth + 1, 0).getDate();
+  const todayStr    = custCalTodayStr();
+
+  for (let i = 0; i < firstDay; i++) html += '<div></div>';
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr  = `${custCalYear}-${String(custCalMonth + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday  = dateStr === todayStr;
+    const isBooked = custCalBookedDates.has(dateStr);
+
+    let cls = 'cust-cal-cell';
+    if (isToday)  cls += ' cust-cal-today';
+    if (isBooked) cls += ' cust-cal-booked';
+
+    const dot = isBooked ? '<span class="cust-cal-dot"></span>' : '';
+
+    html += `<div class="${cls}" onclick="custCalSelectDay('${dateStr}')">
+      <span class="cust-cal-num">${d}</span>
+      <div class="cust-cal-dots">${dot}</div>
+    </div>`;
+  }
+
+  grid.innerHTML = html;
+}
+
+function custCalPrev() {
+  custCalMonth--;
+  if (custCalMonth < 0) { custCalMonth = 11; custCalYear--; }
+  renderCustCalendar();
+}
+function custCalNext() {
+  custCalMonth++;
+  if (custCalMonth > 11) { custCalMonth = 0; custCalYear++; }
+  renderCustCalendar();
+}
+
+function custCalSelectDay(dateStr) {
+  // Highlight selected
+  document.querySelectorAll('.cust-cal-cell').forEach(c => c.classList.remove('cust-cal-selected'));
+  document.querySelectorAll('.cust-cal-cell').forEach(c => {
+    if (c.getAttribute('onclick') === `custCalSelectDay('${dateStr}')`) c.classList.add('cust-cal-selected');
+  });
+
+  const detail   = document.getElementById('cust-cal-detail');
+  const label    = new Date(dateStr + 'T00:00:00').toLocaleDateString('en-PH', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+  const todayStr = custCalTodayStr();
+  const isBooked = custCalBookedDates.has(dateStr);
+  const isPast   = dateStr < todayStr;
+
+  // Confirmed bookings on this date (show event type, not client name, for privacy)
+  const dayEvents = custCalAllBookings.filter(
+    r => r.eventDate && r.eventDate.split('T')[0] === dateStr && (r.status || '').toLowerCase() === 'confirmed'
+  );
+
+  if (isBooked) {
+    const eventLines = dayEvents.map(r =>
+      `<div style="font-size:12px;color:var(--muted);margin-top:4px">&#8226; ${r.eventType || 'Event'} &mdash; ${r.guests || 0} pax</div>`
+    ).join('');
+    detail.innerHTML = `<div class="cust-cal-booked-notice">
+      <span>&#128197;</span>
+      <div>
+        <strong>${label}</strong>
+        <p>This date is already reserved and unavailable.</p>
+        ${eventLines}
+        <p class="cust-cal-notice-sub">Please choose another date.</p>
+        <button class="cust-cal-book-btn" onclick="location.href='#inquiry'">Pick Another Date</button>
+      </div>
+    </div>`;
+  } else if (isPast) {
+    detail.innerHTML = `<div class="cust-cal-avail-notice">
+      <span>&#128198;</span>
+      <div>
+        <strong>${label}</strong>
+        <p>This date has already passed.</p>
+      </div>
+    </div>`;
+  } else {
+    detail.innerHTML = `<div class="cust-cal-avail-notice">
+      <span>&#9989;</span>
+      <div>
+        <strong>${label}</strong>
+        <p>This date is available! Book now to reserve your event.</p>
+        <button class="cust-cal-book-btn" onclick="document.getElementById('event-date').value='${dateStr}';location.href='#inquiry'">
+          Book This Date
+        </button>
+      </div>
+    </div>`;
+  }
+}
+
+loadCustCalBookings();
+// Re-fetch every 2 minutes so new confirmed bookings appear without page reload
+setInterval(loadCustCalBookings, 2 * 60 * 1000);
+
+// ============================================================
+// FORM SUBMIT
+// ============================================================
+document.getElementById('inquiryForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.querySelector('.btn-text').textContent = 'Submitting...';
+
+  const data = {
+    clientName: document.getElementById('name').value,
+    address:    document.getElementById('address').value,
+    email:      document.getElementById('email').value,
+    eventType:  document.getElementById('event-type').value,
+    package:    document.getElementById('guest-count').value,
+    eventDate:  document.getElementById('event-date').value,
+    phone:      document.getElementById('phone').value,
+    notes:      document.getElementById('notes').value
+  };
+
+  try {
+    const res = await fetch('http://localhost:3000/bookings', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(data)
+    });
+
+    const result = await res.json();
+    const msgEl  = document.getElementById('form-message');
+    msgEl.className = 'form-message';
+
+    if (res.ok) {
+      msgEl.classList.add('success');
+      msgEl.textContent = '\u2713 Booking submitted successfully! We will contact you within 24 hours.';
+      e.target.reset();
+      payInfoBox.style.display = 'none';
+      btn.querySelector('.btn-text').textContent = '\u2713 Booking Sent!';
+      loadCustCalBookings(); // refresh calendar after submission
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.querySelector('.btn-text').textContent = '\u2709 Send Booking Request';
+      }, 4000);
+    } else {
+      msgEl.classList.add('error');
+      msgEl.textContent = result.error || 'Something went wrong. Please try again.';
+      btn.disabled = false;
+      btn.querySelector('.btn-text').textContent = '\u2709 Send Booking Request';
+    }
+  } catch(err) {
+    const msgEl = document.getElementById('form-message');
+    msgEl.className = 'form-message error';
+    msgEl.textContent = 'Unable to connect to server. Please try again later.';
+    btn.disabled = false;
+    btn.querySelector('.btn-text').textContent = '\u2709 Send Booking Request';
+  }
+});
+</script>
+
+</body>
+</html>
