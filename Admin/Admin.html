@@ -10,7 +10,7 @@
 </head>
 <body>
 
-<!-- SIDEBAR -->
+
 <nav class="sidebar">
   <div class="sidebar-logo">
     <div class="logo-title">NARDS</div>
@@ -33,31 +33,31 @@
   <div class="sidebar-footer">© 2026 Nards Catering</div>
 </nav>
 
-<!-- MAIN -->
+
 <div class="main">
   <div class="topbar">
     <div class="page-title" id="pageTitle">Dashboard</div>
     <div class="topbar-actions">
       <button class="btn btn-outline btn-sm" onclick="navigate('bookings'); openBookingModal()">+ New Booking</button>
       <button class="btn btn-primary btn-sm" onclick="navigate('inventory'); openIngredientModal()">+ Add Ingredient</button>
-      <!-- Notification Bell -->
+      
       <button class="btn-notif-bell" id="notif-bell-btn" onclick="openEventNotifications()" title="Event Notifications">
         🔔 <span class="notif-bell-dot" id="notif-bell-dot" style="display:none"></span>
       </button>
-      <!-- FIX: Logout button clears session -->
+      
       <button class="btn-logout" onclick="logout()">🔓 Logout</button>
     </div>
   </div>
 
   <div class="content">
 
-    <!-- DASHBOARD -->
+    
     <div class="view active" id="view-dashboard">
 
-      <!-- EVENT ALERT BANNER (today's confirmed events) -->
+      
       <div id="event-alert-banner" style="display:none" class="event-alert-banner"></div>
 
-      <!-- STATS GRID — original + new event stats -->
+      
       <div class="stats-grid stats-grid-6">
         <div class="stat-card stat-accent">
           <div class="stat-label">Total Bookings</div>
@@ -91,7 +91,7 @@
         </div>
       </div>
 
-      <!-- EVENT STATUS SUMMARY WIDGET -->
+      
       <div class="dash-grid-3">
         <div class="card">
           <div class="card-title">📋 Recent Bookings</div>
@@ -129,7 +129,7 @@
       </div>
     </div>
 
-    <!-- BOOKINGS -->
+    
     <div class="view" id="view-bookings">
       <div class="section-header">
         <h2>Booking Management</h2>
@@ -156,7 +156,7 @@
       </div>
     </div>
 
-    <!-- INVENTORY -->
+    
     <div class="view" id="view-inventory">
       <div class="section-header">
         <h2>Ingredient Inventory</h2>
@@ -184,7 +184,7 @@
       </div>
     </div>
 
-    <!-- MENU -->
+    
     <div class="view" id="view-menu">
       <div class="section-header">
         <h2>Menu Packages</h2>
@@ -193,7 +193,7 @@
       <div id="menu-cards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;"></div>
     </div>
 
-    <!-- ASSETS -->
+    
     <div class="view" id="view-assets">
       <div class="section-header">
         <h2>Catering Assets</h2>
@@ -214,7 +214,7 @@
       </div>
     </div>
 
-    <!-- DISHES -->
+    
     <div class="view" id="view-dishes">
       <div class="section-header">
         <h2>Dish Management</h2>
@@ -235,7 +235,7 @@
       </div>
     </div>
 
-    <!-- CLIENTS -->
+    
     <div class="view" id="view-clients">
       <div class="section-header">
         <h2>Client Records</h2>
@@ -256,13 +256,13 @@
       </div>
     </div>
 
-    <!-- CALENDAR -->
+    
     <div class="view" id="view-calendar">
       <div class="section-header">
         <h2>Booking Calendar</h2>
       </div>
       <div class="cal-layout">
-        <!-- Month navigator -->
+        
         <div class="cal-card">
           <div class="cal-nav">
             <button class="btn btn-outline btn-sm" onclick="calPrevMonth()">&lsaquo;</button>
@@ -276,7 +276,7 @@
             <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text)"><span class="cal-dot dot-completed" style="width:10px;height:10px"></span>Completed</span>
           </div>
         </div>
-        <!-- Day detail panel -->
+        
         <div class="card" id="cal-detail" style="min-width:280px;max-width:340px">
           <div class="card-title" id="cal-detail-title" style="font-size:15px">Select a date</div>
           <div id="cal-detail-list"><p style="font-size:13px;color:var(--text-muted)">Click any date with a dot to see bookings.</p></div>
@@ -284,7 +284,7 @@
       </div>
     </div>
 
-    <!-- REPORTS -->
+    
     <div class="view" id="view-reports">
       <div class="section-header"><h2>Business Reports</h2></div>
       <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
@@ -301,9 +301,7 @@
   </div>
 </div>
 
-<!-- ============================================================
-     EVENT NOTIFICATION POPUP (today's + upcoming confirmed events)
-============================================================ -->
+
 <div class="modal-overlay" id="event-notification-modal">
   <div class="modal event-notif-modal" style="width:580px;max-width:95vw">
     <div class="modal-title">
@@ -311,7 +309,7 @@
       <button class="modal-close" onclick="closeModal('event-notification-modal')">✕</button>
     </div>
 
-    <!-- Today section -->
+    
     <div id="notif-today-section">
       <div class="notif-section-header notif-today-hdr">
         <span class="notif-section-icon">📅</span>
@@ -323,7 +321,7 @@
       </div>
     </div>
 
-    <!-- Upcoming section -->
+    
     <div id="notif-upcoming-section" style="margin-top:20px">
       <div class="notif-section-header notif-upcoming-hdr">
         <span class="notif-section-icon">🔔</span>
@@ -342,7 +340,7 @@
   </div>
 </div>
 
-<!-- BOOKING MODAL -->
+
 <div class="modal-overlay" id="booking-modal">
   <div class="modal">
     <div class="modal-title">
@@ -377,7 +375,7 @@
   </div>
 </div>
 
-<!-- CONFIRM MODAL -->
+
 <div class="modal-overlay" id="confirm-modal">
   <div class="modal" style="width:620px">
     <div class="modal-title">
@@ -397,7 +395,7 @@
   </div>
 </div>
 
-<!-- INGREDIENT MODAL -->
+
 <div class="modal-overlay" id="ingredient-modal">
   <div class="modal" style="width:480px">
     <div class="modal-title">
@@ -427,7 +425,7 @@
   </div>
 </div>
 
-<!-- MENU MODAL -->
+
 <div class="modal-overlay" id="menu-modal">
   <div class="modal" style="width:640px;max-height:90vh;overflow-y:auto">
     <div class="modal-title">
@@ -440,7 +438,7 @@
       <div class="form-group"><label>Min. Guests</label><input id="mn-min" type="number" min="0" placeholder="50"></div>
     </div>
 
-    <!-- Package Assets -->
+    
     <div style="margin-top:16px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
         <label style="font-weight:600;font-size:13px;color:var(--dark)">Package Assets</label>
@@ -450,7 +448,7 @@
       <div id="mn-assets-empty" style="font-size:13px;color:var(--text-muted);padding:6px 0">No assets added yet.</div>
     </div>
 
-    <!-- Package Dishes -->
+    
     <div style="margin-top:16px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
         <label style="font-weight:600;font-size:13px;color:var(--dark)">🍽️ Dishes / Menu Items</label>
@@ -460,7 +458,7 @@
       <div id="mn-dishes-empty" style="font-size:13px;color:var(--text-muted);padding:6px 0">No dishes added yet.</div>
     </div>
 
-    <!-- Freebies — highlighted -->
+    
     <div class="freebies-section" style="margin-top:16px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
         <label style="font-weight:700;font-size:13px;color:var(--gold-dark)">⭐ Freebies / Inclusions</label>
@@ -477,7 +475,7 @@
   </div>
 </div>
 
-<!-- ASSET MODAL -->
+
 <div class="modal-overlay" id="asset-modal">
   <div class="modal" style="width:420px">
     <div class="modal-title">
@@ -506,7 +504,7 @@
   </div>
 </div>
 
-<!-- DISH MODAL -->
+
 <div class="modal-overlay" id="dish-modal">
   <div class="modal" style="width:420px">
     <div class="modal-title">
@@ -536,7 +534,7 @@
   </div>
 </div>
 
-<!-- DISH INGREDIENTS MODAL -->
+
 <div class="modal-overlay" id="dish-ingredients-modal">
   <div class="modal" style="width:640px;max-width:95vw">
     <div class="modal-title">
@@ -559,7 +557,7 @@
   </div>
 </div>
 
-<!-- CLIENT MODAL -->
+
 <div class="modal-overlay" id="client-modal">
   <div class="modal" style="width:480px">
     <div class="modal-title">
@@ -579,7 +577,7 @@
   </div>
 </div>
 
-<!-- RESTOCK MODAL -->
+
 <div class="modal-overlay" id="restock-modal">
   <div class="modal" style="width:380px">
     <div class="modal-title">
@@ -598,7 +596,7 @@
   </div>
 </div>
 
-<!-- NOTIFICATION -->
+
 <div class="notif" id="notif">
   <span id="notif-icon">✅</span>
   <span id="notif-msg">Saved!</span>
@@ -606,12 +604,12 @@
 
 <script src="/node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>
 <script>
-// ============================================================
-// EVENT NOTIFICATIONS — auto-popup on dashboard load
-// ============================================================
+
+
+
 let _notifTodayData    = [];
 let _notifUpcomingData = [];
-const API = 'http://localhost:3000'; // Change this to your actual backend URL
+const API = 'http://localhost:3000'; 
 
 async function loadEventNotifications() {
   try {
@@ -622,7 +620,7 @@ async function loadEventNotifications() {
     _notifTodayData    = todayRes.ok    ? await todayRes.json()    : [];
     _notifUpcomingData = upcomingRes.ok ? await upcomingRes.json() : [];
   } catch(e) {
-    // Fallback: use local data
+    
     const todayStr = today();
     const fl = new Date(); fl.setDate(fl.getDate() + 30);
     const limit = fl.getFullYear() + '-' + String(fl.getMonth()+1).padStart(2,'0') + '-' + String(fl.getDate()).padStart(2,'0');
@@ -636,11 +634,11 @@ async function loadEventNotifications() {
 
   const totalCount = _notifTodayData.length + _notifUpcomingData.length;
 
-  // Update bell badge dot
+  
   const bellDot = document.getElementById('notif-bell-dot');
   if (bellDot) bellDot.style.display = totalCount > 0 ? 'block' : 'none';
 
-  // Alert banner on dashboard
+  
   const banner = document.getElementById('event-alert-banner');
   if (banner) {
     if (_notifTodayData.length > 0) {
@@ -655,7 +653,7 @@ async function loadEventNotifications() {
     }
   }
 
-  // Auto-show popup on first dashboard visit if there are events today
+  
   if (_notifTodayData.length > 0 && !sessionStorage.getItem('nards_notif_shown')) {
     sessionStorage.setItem('nards_notif_shown', 'true');
     setTimeout(() => openEventNotifications(), 800);
@@ -663,7 +661,7 @@ async function loadEventNotifications() {
 }
 
 function openEventNotifications() {
-  // Render today list
+  
   const todayList = document.getElementById('notif-today-list');
   const todayCnt  = document.getElementById('notif-today-count');
   if (todayCnt) todayCnt.textContent = _notifTodayData.length;
@@ -686,7 +684,7 @@ function openEventNotifications() {
     }
   }
 
-  // Render upcoming list
+  
   const upcomingList = document.getElementById('notif-upcoming-list');
   const upcomingCnt  = document.getElementById('notif-upcoming-count');
   if (upcomingCnt) upcomingCnt.textContent = _notifUpcomingData.length;
@@ -711,9 +709,9 @@ function openEventNotifications() {
   openModal('event-notification-modal');
 }
 
-// ============================================================
-// FIX 1: AUTH GUARD — redirect to login if not authenticated
-// ============================================================
+
+
+
 if (sessionStorage.getItem('nards_admin_auth') !== 'true') {
   window.location.href = '/login';
 }
@@ -740,7 +738,7 @@ async function confirmAction(message, options = {}) {
   return result.isConfirmed;
 }
 
-// FIX 2: Logout function — clears session and redirects
+
 async function logout() {
   const shouldLogout = await confirmAction('Are you sure you want to log out?', {
     icon: 'question',
@@ -753,9 +751,9 @@ async function logout() {
   window.location.href = '/login';
 }
 
-// ============================================================
-// FIX 3: DATA PERSISTENCE with localStorage
-// ============================================================
+
+
+
 const STORAGE_KEY = 'nards_admin_data';
 
 const defaultData = {
@@ -791,7 +789,7 @@ function today() {
 }
 function uid(prefix) { return prefix + '-' + Math.random().toString(36).substr(2,6).toUpperCase(); }
 
-// Load from localStorage, fall back to default seed data
+
 function loadData() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -803,7 +801,7 @@ function loadData() {
   }
 }
 
-// Save to localStorage after every change
+
 function saveData() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {}
 }
@@ -812,9 +810,9 @@ let data = loadData();
 let editIdx = { booking: -1, ingredient: -1 };
 let restockIdx = -1;
 
-// ============================================================
-// SYNC BOOKINGS FROM BACKEND API (customer submissions)
-// ============================================================
+
+
+
 async function syncFromAPI() {
   try {
     const res = await fetch(`${API}/bookings`);
@@ -830,7 +828,7 @@ async function syncFromAPI() {
         ? row.status.charAt(0).toUpperCase() + row.status.slice(1)
         : 'Pending';
       const date = row.eventDate ? row.eventDate.split('T')[0] : '';
-      // Skip bookings that were deleted by the admin
+      
       if (data.deletedBookingIds.includes(apiId)) return;
       const existing = data.bookings.find(b => b.id === apiId);
       if (existing) {
@@ -863,13 +861,13 @@ async function syncFromAPI() {
     });
     if (changed) saveData();
   } catch(e) {
-    // server offline — continue with local data
+    
   }
 }
 
-// ============================================================
-// NAVIGATION
-// ============================================================
+
+
+
 function navigate(view) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -890,9 +888,9 @@ function navigate(view) {
   if (view === 'reports')   renderReports();
 }
 
-// ============================================================
-// MODALS
-// ============================================================
+
+
+
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
@@ -902,7 +900,7 @@ async function openBookingModal(idx) {
   ['bk-client','bk-phone','bk-email','bk-event','bk-date','bk-time','bk-guests','bk-package','bk-venue','bk-amount','bk-dp','bk-status','bk-notes']
     .forEach(f => { const el = document.getElementById(f); if (el) el.value = ''; });
 
-  // Populate event types from DB
+  
   try {
     const etRes = await fetch(`${API}/bookings/eventtypes`);
     if (etRes.ok) {
@@ -989,9 +987,9 @@ function openRestockModal(idx) {
   openModal('restock-modal');
 }
 
-// ============================================================
-// SAVE FUNCTIONS
-// ============================================================
+
+
+
 async function saveBooking() {
   const client = document.getElementById('bk-client').value.trim();
   const event  = document.getElementById('bk-event').value;
@@ -1016,11 +1014,11 @@ async function saveBooking() {
     notes:   document.getElementById('bk-notes').value.trim()
   };
 
-  // If editing a DB booking, sync changes back to the server
+  
   if (editIdx.booking >= 0 && booking.id && booking.id.startsWith('DB-')) {
     const dbId = booking.id.replace('DB-', '');
     try {
-      // Update full booking record
+      
       await fetch(`${API}/bookings/${dbId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -1036,7 +1034,7 @@ async function saveBooking() {
           notes:      booking.notes
         })
       });
-      // Sync status separately via PATCH
+      
       const statusRes = await fetch(`${API}/bookings/${dbId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -1059,7 +1057,7 @@ async function saveBooking() {
 
   if (editIdx.booking >= 0) {
     data.bookings[editIdx.booking] = booking;
-    // Auto-register client in Client Records when marked Completed
+    
     if (!data.clients.find(c => c.name.toLowerCase() === client.toLowerCase())) {
       data.clients.push({ id: uid('CL'), name: client, phone: booking.phone, email: booking.email, address: '' });
     }
@@ -1213,9 +1211,9 @@ async function confirmRestock() {
   }
 }
 
-// ============================================================
-// HELPERS
-// ============================================================
+
+
+
 function stockStatus(ing) {
   const pct = ing.good > 0 ? (ing.stock / ing.good) * 100 : 100;
   if (ing.stock <= 0 || ing.stock < ing.min) return { label:'Critical',  cls:'badge-danger',  fillCls:'fill-danger',  pct: Math.min(pct,100), key:'critical' };
@@ -1235,9 +1233,9 @@ function fmtDate(d) {
 
 function fmtMoney(n) { return '₱' + Number(n).toLocaleString('en-PH'); }
 
-// ============================================================
-// RENDER FUNCTIONS
-// ============================================================
+
+
+
 function renderInventory() {
   const search = (document.getElementById('inv-search')?.value || '').toLowerCase();
   const filter = document.getElementById('inv-filter')?.value || '';
@@ -1319,7 +1317,7 @@ async function renderMenuCards() {
             ? p.assets.map(a => `<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid var(--border)"><span>${a.name}</span><span style="color:var(--text-muted)">${a.qty_required} ${a.unit}</span></div>`).join('')
             : '<div style="font-size:13px;color:var(--text-muted)">No assets assigned.</div>';
 
-          // Group dishes by category
+          
           const dishMap = {};
           (p.dishes || []).forEach(d => {
             if (!dishMap[d.category]) dishMap[d.category] = [];
@@ -1455,7 +1453,7 @@ function renderDashboard() {
   document.getElementById('stat-today').textContent     = todayEvts.length;
   document.getElementById('stat-pending').textContent   = pendingCnt;
 
-  // Recent bookings
+  
   const rb     = document.getElementById('dash-recent-bookings');
   const recent = [...data.bookings].reverse().filter(b => b.status !== 'Completed').slice(0,4);
   rb.innerHTML = recent.length
@@ -1469,16 +1467,16 @@ function renderDashboard() {
         </div>`).join('')
     : '<div class="empty-state"><div class="empty-icon">📋</div><p>No bookings yet</p></div>';
 
-  // Today's events widget
+  
   renderTodayEventsWidget(todayEvts);
 
-  // Upcoming events widget — pull from API for freshness
+  
   renderUpcomingEventsWidget();
 
-  // Status summary widget
+  
   renderStatusSummary();
 
-  // Low stock
+  
   const ls       = document.getElementById('dash-low-stock');
   const lowItems = data.inventory.filter(i => stockStatus(i).key !== 'good');
   ls.innerHTML = lowItems.length
@@ -1542,7 +1540,7 @@ async function renderUpcomingEventsWidget() {
       </div>`;
     }).join('');
   } catch(e) {
-    // Fallback to local data
+    
     const todayStr = today();
     const fl = new Date(); fl.setDate(fl.getDate() + 30);
     const limit = fl.getFullYear() + '-' + String(fl.getMonth()+1).padStart(2,'0') + '-' + String(fl.getDate()).padStart(2,'0');
@@ -1586,7 +1584,7 @@ async function renderStatusSummary() {
       </div>`;
     }).join('') + `<div style="padding:10px 0 0;font-size:12px;color:var(--text-muted)">Total: ${total} bookings</div>`;
   } catch(e) {
-    // Fallback
+    
     const counts = { Pending:0, Confirmed:0, Completed:0, Cancelled:0 };
     data.bookings.forEach(b => { if(counts[b.status] !== undefined) counts[b.status]++; });
     const total = data.bookings.length || 1;
@@ -1636,9 +1634,9 @@ function renderReports() {
     <div class="recent-item"><span>Total Ingredients</span><strong>${data.inventory.length}</strong></div>`;
 }
 
-// ============================================================
-// CONFIRMATION
-// ============================================================
+
+
+
 function showConfirmation(booking) {
   const dp      = booking.dp || 0;
   const balance = booking.amount - dp;
@@ -1673,16 +1671,16 @@ function showConfirmation(booking) {
   openModal('confirm-modal');
 }
 
-// ============================================================
-// DELETE
-// ============================================================
+
+
+
 async function deleteBooking(idx) {
   if (!await confirmAction('Delete this booking?', {
     text: 'This action cannot be undone.',
     confirmButtonText: 'Delete'
   })) return;
   const booking = data.bookings[idx];
-  // If it came from the database, delete it there first so syncFromAPI won't bring it back
+  
   if (booking.id && booking.id.startsWith('DB-')) {
     const dbId = booking.id.replace('DB-', '');
     try {
@@ -1691,7 +1689,7 @@ async function deleteBooking(idx) {
     } catch(e) {
       notify('Server not connected — cannot delete', '❌'); return;
     }
-    // Track deleted DB ID so syncFromAPI never re-adds it to Recent Bookings
+    
     if (!data.deletedBookingIds.includes(booking.id)) data.deletedBookingIds.push(booking.id);
   }
   data.bookings.splice(idx, 1); saveData(); renderBookings(); notify('Booking deleted', '🗑️');
@@ -1750,14 +1748,14 @@ async function deleteClient(id) {
   const client = data.clients.find(c => c.id === id);
   if (client) {
     const clientBookings = data.bookings.filter(b => b.client.toLowerCase() === client.name.toLowerCase());
-    // Delete DB-backed bookings from the server and record their IDs so syncFromAPI won't re-add them
+    
     for (const b of clientBookings) {
       if (b.id && b.id.startsWith('DB-')) {
         if (!data.deletedBookingIds.includes(b.id)) data.deletedBookingIds.push(b.id);
         const dbId = b.id.replace('DB-', '');
         try {
           await fetch(`${API}/bookings/${dbId}`, { method: 'DELETE' });
-        } catch(e) { /* server offline — continue */ }
+        } catch(e) {  }
       }
     }
     data.bookings = data.bookings.filter(b => b.client.toLowerCase() !== client.name.toLowerCase());
@@ -1766,9 +1764,9 @@ async function deleteClient(id) {
   saveData(); renderClients(); renderDashboard(); notify('Client removed', '🗑️');
 }
 
-// ============================================================
-// CATERING ASSETS & PACKAGES (API-based)
-// ============================================================
+
+
+
 let assetsList    = [];
 let editAssetId   = null;
 let editPackageId = null;
@@ -1815,7 +1813,7 @@ async function syncInventoryFromAPI() {
     });
     saveData();
   } catch (e) {
-    // server offline — keep local inventory
+    
   }
 }
 
@@ -1942,9 +1940,9 @@ function updateAssetEmptyMsg() {
   if (empty) empty.style.display = container.children.length ? 'none' : 'block';
 }
 
-// ============================================================
-// DISHES (API-based)
-// ============================================================
+
+
+
 async function fetchDishes() {
   try {
     const res = await fetch(`${API}/dishes`);
@@ -2116,14 +2114,14 @@ async function saveDishIngredients() {
 
     closeModal('dish-ingredients-modal');
     notify('Dish ingredients saved!', '✅');
-    // Re-open from server state so removed rows are guaranteed reflected after save.
+    
     await openDishIngredientsModal(dishId);
   } catch (e) {
     notify('Server not connected', '❌');
   }
 }
 
-// ---- Dish rows inside the package modal ----
+
 function refreshDishDropdowns() {
   const selects = Array.from(document.querySelectorAll('#mn-dishes-container .dish-row-select'));
   selects.forEach(sel => {
@@ -2179,7 +2177,7 @@ function updateDishEmptyMsg() {
   if (empty) empty.style.display = container.children.length ? 'none' : 'block';
 }
 
-// ---- Freebie rows inside the package modal ----
+
 function freebieRowHtml(name) {
   return `<div class="freebie-row" style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
     <input type="text" class="freebie-row-input" value="${name || ''}" placeholder="e.g. Free Flowing Drinks" style="flex:1;padding:8px 10px;border:1.5px solid var(--gold);border-radius:6px;font-size:13px;background:#fff;color:var(--dark)">
@@ -2203,14 +2201,14 @@ function updateFreebieEmptyMsg() {
   if (empty) empty.style.display = container.children.length ? 'none' : 'block';
 }
 
-// ============================================================
-// CALENDAR
-// ============================================================
-let calYear  = new Date().getFullYear();
-let calMonth = new Date().getMonth(); // 0-based
-let calSelectedDate = null; // persists across re-renders
 
-// Returns ALL bookings grouped by date string 'YYYY-MM-DD'
+
+
+let calYear  = new Date().getFullYear();
+let calMonth = new Date().getMonth(); 
+let calSelectedDate = null; 
+
+
 function calBookingsByDate() {
   const map = {};
   data.bookings.forEach(b => {
@@ -2331,7 +2329,7 @@ async function calMarkDone(idx) {
     confirmButtonColor: '#0f766e'
   })) return;
 
-  // If DB booking, update via API
+  
   if (booking.id && booking.id.startsWith('DB-')) {
     const dbId = booking.id.replace('DB-', '');
     try {
@@ -2347,7 +2345,7 @@ async function calMarkDone(idx) {
   }
 
   data.bookings[idx].status = 'Completed';
-  // Auto-register client in Client Records
+  
   const bk = data.bookings[idx];
   if (!data.clients.find(c => c.name.toLowerCase() === bk.client.toLowerCase())) {
     data.clients.push({ id: uid('CL'), name: bk.client, phone: bk.phone||'', email: bk.email||'', address: '' });
@@ -2355,7 +2353,7 @@ async function calMarkDone(idx) {
   saveData();
   notify(`${booking.client}'s booking moved to Client Records`, '\u2705');
 
-  // Refresh calendar — calSelectedDate persists so detail panel re-renders
+  
   renderCalendar();
 }
 
@@ -2406,16 +2404,16 @@ function notify(msg, icon) {
   el.classList.remove('show');
 }
 
-// Close modal on overlay click
+
 document.querySelectorAll('.modal-overlay').forEach(overlay => {
   overlay.addEventListener('click', function(e) {
     if (e.target === this) closeModal(this.id);
   });
 });
 
-// ============================================================
-// INIT
-// ============================================================
+
+
+
 fetchPackages().then(() => syncInventoryFromAPI()).then(() => syncFromAPI()).then(() => {
   renderDashboard();
   loadEventNotifications();

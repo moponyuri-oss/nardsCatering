@@ -146,7 +146,7 @@ exports.getEventTypes = async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT DISTINCT eventType FROM Bookings WHERE eventType IS NOT NULL AND eventType != '' ORDER BY eventType ASC");
     const fromDb = rows.map(r => r.eventType);
-    // Merge: DB values first (preserves casing), then fallback entries not already present
+    
     const merged = [...fromDb, ...fallback.filter(f => !fromDb.some(d => d.toLowerCase() === f.toLowerCase()))];
     res.json(merged);
   } catch (err) {
@@ -164,7 +164,7 @@ exports.deleteBooking = async (req, res) => {
   }
 };
 
-// Returns confirmed bookings scheduled for today
+
 exports.getTodayEvents = async (req, res) => {
   try {
     const n = new Date();
@@ -179,7 +179,7 @@ exports.getTodayEvents = async (req, res) => {
   }
 };
 
-// Returns confirmed bookings from tomorrow up to the next 30 days
+
 exports.getUpcomingEvents = async (req, res) => {
   try {
     const n = new Date();
@@ -196,7 +196,7 @@ exports.getUpcomingEvents = async (req, res) => {
   }
 };
 
-// Returns count of bookings grouped by status for the dashboard summary
+
 exports.getStatusSummary = async (req, res) => {
   try {
     const [rows] = await pool.query(

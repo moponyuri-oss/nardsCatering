@@ -52,7 +52,7 @@
   const VALID_USERNAME = 'admin';
   const VALID_PASSWORD = 'nards2024';
 
-  // FIX 1: If already logged in, skip straight to dashboard
+  
   if (sessionStorage.getItem('nards_admin_auth') === 'true') {
     window.location.href = '/admin';
   }
@@ -89,7 +89,7 @@
 
     setTimeout(() => {
       if (username === VALID_USERNAME && password === VALID_PASSWORD) {
-        // FIX 1: Write auth session before redirecting
+        
         sessionStorage.setItem('nards_admin_auth', 'true');
         loginBtn.innerHTML = '✅ Redirecting...';
         setTimeout(() => { window.location.href = '/admin'; }, 400);

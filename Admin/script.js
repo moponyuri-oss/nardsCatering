@@ -1,4 +1,4 @@
-// ── Navbar scroll effect ──────────────────────────────────────────
+
 window.addEventListener('scroll', () => {
 const nav = document.querySelector('nav');
 nav.style.background = window.scrollY > 50
@@ -6,7 +6,7 @@ nav.style.background = window.scrollY > 50
 : 'rgba(36,24,18,0.85)';
 });
 
-// ── Active nav link highlight on scroll ───────────────────────────
+
 const sections = document.querySelectorAll('section');
 const navLinks = document.querySelectorAll('.nav-links a');
 
@@ -24,7 +24,7 @@ link.style.color = link.getAttribute('href') === `#${current}`
 });
 });
 
-// ── Fade-up on scroll (Intersection Observer) ─────────────────────
+
 const fadeEls = document.querySelectorAll(
 '.hero-left, .hero-img-wrapper, .section-inner, .offer-card, .offer-row'
 );
@@ -46,19 +46,19 @@ el.style.transition = 'opacity 0.7s ease, transform 0.7s ease';
 observer.observe(el);
 });
 
-// ── All CTA buttons scroll to contact ────────────────────────────
+
 document.querySelectorAll('.nav-cta, .big-btn').forEach(btn => {
 btn.addEventListener('click', () => {
 document.querySelector('#contact').scrollIntoView({ behavior: 'smooth' });
 });
 });
 
-// ── Offer cards staggered animation delay ────────────────────────
+
 document.querySelectorAll('.offer-card').forEach((card, i) => {
 card.style.transitionDelay = `${i * 0.08}s`;
 });
 
-// ── Hero image parallax on mouse move ────────────────────────────
+
 const heroImg = document.querySelector('.hero-img-wrapper');
 if (heroImg) {
 document.addEventListener('mousemove', (e) => {
@@ -68,7 +68,7 @@ heroImg.style.transform = `translate(${x}px, ${y}px)`;
 });
 }
 
-// ── Auto-update footer year ───────────────────────────────────────
+
 const footer = document.querySelector('footer');
 if (footer) {
 footer.innerHTML = `© ${new Date().getFullYear()} Nards Catering`;

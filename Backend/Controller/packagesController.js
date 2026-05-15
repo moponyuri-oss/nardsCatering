@@ -1,6 +1,6 @@
 const pool = require('../Model/db');
 
-// GET all packages with their assets, dishes, and freebies
+
 exports.getAllPackages = async (req, res) => {
   try {
     const [packages] = await pool.query('SELECT * FROM Packages ORDER BY id ASC');
@@ -33,7 +33,7 @@ exports.getAllPackages = async (req, res) => {
   }
 };
 
-// GET single package with assets, dishes, and freebies
+
 exports.getPackageById = async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT * FROM Packages WHERE id = ?', [req.params.id]);
@@ -66,7 +66,7 @@ exports.getPackageById = async (req, res) => {
   }
 };
 
-// POST create package (with assets array)
+
 exports.createPackage = async (req, res) => {
   const conn = await pool.getConnection();
   try {
@@ -115,7 +115,7 @@ exports.createPackage = async (req, res) => {
   }
 };
 
-// PUT update package (replaces all assets)
+
 exports.updatePackage = async (req, res) => {
   const conn = await pool.getConnection();
   try {
@@ -170,7 +170,7 @@ exports.updatePackage = async (req, res) => {
   }
 };
 
-// DELETE package (PackageAssets cascade-deleted via FK)
+
 exports.deletePackage = async (req, res) => {
   try {
     const [result] = await pool.query('DELETE FROM Packages WHERE id=?', [req.params.id]);

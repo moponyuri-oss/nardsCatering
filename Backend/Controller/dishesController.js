@@ -89,8 +89,8 @@ exports.replaceDishIngredients = async (req, res) => {
       }))
       .filter((item) => Number.isInteger(item.inventory_id) && Number.isInteger(item.qty_required) && item.qty_required > 0);
 
-    // De-duplicate by inventory_id (keep latest value) so accidental duplicate rows
-    // in the UI do not inflate required ingredient counts.
+    
+    
     const mergedMap = new Map();
     for (const item of normalized) {
       mergedMap.set(item.inventory_id, item.qty_required);

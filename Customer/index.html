@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<!-- MOBILE NAV -->
+
 <nav id="main-nav">
   <a href="#home" class="nav-logo">Nards<span>.</span></a>
   <ul class="nav-links">
@@ -35,7 +35,7 @@
   <a href="#inquiry" class="mobile-nav-cta" onclick="closeMobileNav()">Book an Event</a>
 </div>
 
-<!-- HOME -->
+
 <section id="home">
   <div class="hero-left">
     <p class="hero-tag">Premium Catering &amp; Event Setup</p>
@@ -93,7 +93,7 @@
   </div>
 </section>
 
-<!-- PACKAGES -->
+
 <section id="offers">
   <div class="section-inner">
     <span class="section-badge reveal">Our Packages</span>
@@ -112,7 +112,7 @@
   </div>
 </section>
 
-<!-- SERVICES -->
+
 <section id="services">
   <div class="section-inner">
     <span class="section-badge reveal">What We Serve</span>
@@ -145,7 +145,7 @@
   </div>
 </section>
 
-<!-- AVAILABILITY CALENDAR -->
+
 <section id="calendar">
   <div class="section-inner">
     <span class="section-badge reveal">Check Availability</span>
@@ -154,7 +154,7 @@
     <div class="gold-line reveal reveal-delay-3"></div>
 
     <div class="cust-cal-layout reveal reveal-delay-4">
-      <!-- Month grid -->
+      
       <div class="cust-cal-card">
         <div class="cust-cal-nav">
           <button class="cust-cal-btn" onclick="custCalPrev()" aria-label="Previous month">&#8249;</button>
@@ -164,7 +164,7 @@
         <div class="cust-cal-grid" id="cust-cal-grid"></div>
       </div>
 
-      <!-- Side panel: legend + day detail -->
+      
       <div class="cust-cal-info">
         <div class="cust-cal-legend">
           <div class="cust-leg-item"><div class="cust-leg-dot dot-booked"></div> Booked / Unavailable</div>
@@ -179,7 +179,7 @@
   </div>
 </section>
 
-<!-- INQUIRY / BOOKING FORM -->
+
 <section id="inquiry">
   <div class="section-inner">
     <span class="section-badge reveal">Book Your Event</span>
@@ -264,7 +264,7 @@
   </div>
 </section>
 
-<!-- CONTACT -->
+
 <section id="contact">
   <div class="section-inner">
     <span class="section-badge reveal">Get In Touch</span>
@@ -325,13 +325,13 @@
   </ul>
 </footer>
 
-<!-- Scroll to top -->
+
 <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Scroll to top">&#8679;</button>
 
 <script>
-// ============================================================
-// NAV SCROLL + MOBILE
-// ============================================================
+
+
+
 const mainNav = document.getElementById('main-nav');
 const mobileNav = document.getElementById('mobile-nav');
 const navToggle = document.getElementById('nav-toggle');
@@ -350,16 +350,16 @@ function closeMobileNav() {
   mobileNav.classList.remove('open');
 }
 
-// Close mobile nav on outside click
+
 document.addEventListener('click', (e) => {
   if (!mainNav.contains(e.target) && !mobileNav.contains(e.target)) {
     mobileNav.classList.remove('open');
   }
 });
 
-// ============================================================
-// SCROLL REVEAL
-// ============================================================
+
+
+
 const revealEls = document.querySelectorAll('.reveal');
 const revealObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
@@ -371,9 +371,9 @@ const revealObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.12 });
 revealEls.forEach(el => revealObserver.observe(el));
 
-// ============================================================
-// PACKAGES — load from database
-// ============================================================
+
+
+
 let customerPackages = [];
 
 async function loadPackages() {
@@ -432,7 +432,7 @@ async function loadPackages() {
     }).join('');
   }
 
-  // Populate booking package select
+  
   const sel = document.getElementById('guest-count');
   sel.innerHTML = '<option value="">Select a package...</option>' +
     customerPackages.map(p =>
@@ -440,7 +440,7 @@ async function loadPackages() {
     ).join('');
 }
 
-// PRICE display on package select
+
 const packageSelect = document.getElementById('guest-count');
 const totalPriceEl  = document.getElementById('totalPrice');
 const downPayEl     = document.getElementById('downPayment');
@@ -460,13 +460,13 @@ packageSelect.addEventListener('change', function() {
 
 loadPackages();
 
-// ============================================================
-// AVAILABILITY CALENDAR
-// ============================================================
+
+
+
 let custCalYear  = new Date().getFullYear();
 let custCalMonth = new Date().getMonth();
-let custCalBookedDates = new Set();  // 'YYYY-MM-DD' of confirmed bookings
-let custCalAllBookings = [];         // full rows for detail panel
+let custCalBookedDates = new Set();  
+let custCalAllBookings = [];         
 
 function custCalTodayStr() {
   const n = new Date();
@@ -537,7 +537,7 @@ function custCalNext() {
 }
 
 function custCalSelectDay(dateStr) {
-  // Highlight selected
+  
   document.querySelectorAll('.cust-cal-cell').forEach(c => c.classList.remove('cust-cal-selected'));
   document.querySelectorAll('.cust-cal-cell').forEach(c => {
     if (c.getAttribute('onclick') === `custCalSelectDay('${dateStr}')`) c.classList.add('cust-cal-selected');
@@ -549,7 +549,7 @@ function custCalSelectDay(dateStr) {
   const isBooked = custCalBookedDates.has(dateStr);
   const isPast   = dateStr < todayStr;
 
-  // Confirmed bookings on this date (show event type, not client name, for privacy)
+  
   const dayEvents = custCalAllBookings.filter(
     r => r.eventDate && r.eventDate.split('T')[0] === dateStr && (r.status || '').toLowerCase() === 'confirmed'
   );
@@ -591,18 +591,18 @@ function custCalSelectDay(dateStr) {
 }
 
 loadCustCalBookings();
-// Re-fetch every 2 minutes so new confirmed bookings appear without page reload
+
 setInterval(loadCustCalBookings, 2 * 60 * 1000);
 
-// Prevent choosing a past date in the booking form.
+
 const eventDateInput = document.getElementById('event-date');
 if (eventDateInput) {
   eventDateInput.min = custCalTodayStr();
 }
 
-// ============================================================
-// FORM SUBMIT
-// ============================================================
+
+
+
 document.getElementById('inquiryForm').addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -647,7 +647,7 @@ document.getElementById('inquiryForm').addEventListener('submit', async (e) => {
       e.target.reset();
       payInfoBox.style.display = 'none';
       btn.querySelector('.btn-text').textContent = '\u2713 Booking Sent!';
-      loadCustCalBookings(); // refresh calendar after submission
+      loadCustCalBookings(); 
       setTimeout(() => {
         btn.disabled = false;
         btn.querySelector('.btn-text').textContent = '\u2709 Send Booking Request';

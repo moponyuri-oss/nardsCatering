@@ -1,4 +1,4 @@
-// Example: Fetch and render menu items in Admin.html
+
 function showPopup(options) {
   if (typeof Swal !== 'undefined') {
     return Swal.fire(options);
@@ -11,7 +11,7 @@ async function fetchMenu() {
   try {
     const res = await fetch('http://localhost:5000/api/menu');
     const menu = await res.json();
-    // Render menu items in your admin dashboard
+    
     const menuList = document.getElementById('menu-list');
     menuList.innerHTML = '';
     menu.forEach(item => {
@@ -28,7 +28,7 @@ async function fetchMenu() {
   }
 }
 
-// Example: Add a new menu item
+
 async function addMenuItem(name, description, price) {
   try {
     const res = await fetch('http://localhost:5000/api/menu', {
@@ -42,7 +42,7 @@ async function addMenuItem(name, description, price) {
       title: res.ok ? 'Success' : 'Request failed',
       text: data.message || 'No message returned from server'
     });
-    fetchMenu(); // Refresh list
+    fetchMenu(); 
   } catch (err) {
     await showPopup({
       icon: 'error',
@@ -52,7 +52,7 @@ async function addMenuItem(name, description, price) {
   }
 }
 
-// Call fetchMenu() on page load
+
 if (window.location.pathname.endsWith('Admin.html')) {
   document.addEventListener('DOMContentLoaded', fetchMenu);
 }

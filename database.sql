@@ -1,14 +1,14 @@
--- ============================================================
--- Capstone Database Schema (MySQL)
--- ============================================================
+
+
+
 
 CREATE DATABASE IF NOT EXISTS capstone_db;
 USE capstone_db;
 
--- ------------------------------------------------------------
--- Table: Clients
--- Source: clientController.js
--- ------------------------------------------------------------
+
+
+
+
 CREATE TABLE IF NOT EXISTS Clients (
   id      INT            NOT NULL AUTO_INCREMENT,
   name    VARCHAR(255)   NOT NULL,
@@ -17,10 +17,10 @@ CREATE TABLE IF NOT EXISTS Clients (
   PRIMARY KEY (id)
 );
 
--- ------------------------------------------------------------
--- Table: Bookings
--- Source: bookingsController.js
--- ------------------------------------------------------------
+
+
+
+
 CREATE TABLE IF NOT EXISTS Bookings (
   id          INT          NOT NULL AUTO_INCREMENT,
   clientName  VARCHAR(255) NOT NULL,
@@ -34,13 +34,13 @@ CREATE TABLE IF NOT EXISTS Bookings (
   PRIMARY KEY (id)
 );
 
--- Run this if the table already exists:
--- ALTER TABLE Bookings ADD COLUMN notes TEXT;
 
--- ------------------------------------------------------------
--- Table: Inventory
--- Source: inventoryController.js
--- ------------------------------------------------------------
+
+
+
+
+
+
 CREATE TABLE IF NOT EXISTS Inventory (
   id        INT          NOT NULL AUTO_INCREMENT,
   name      VARCHAR(255) NOT NULL,
@@ -49,10 +49,10 @@ CREATE TABLE IF NOT EXISTS Inventory (
   PRIMARY KEY (id)
 );
 
--- ------------------------------------------------------------
--- Table: Menu
--- Source: menuController.js
--- ------------------------------------------------------------
+
+
+
+
 CREATE TABLE IF NOT EXISTS Menu (
   id          INT            NOT NULL AUTO_INCREMENT,
   name        VARCHAR(255)   NOT NULL,
@@ -61,10 +61,10 @@ CREATE TABLE IF NOT EXISTS Menu (
   PRIMARY KEY (id)
 );
 
--- ------------------------------------------------------------
--- Table: Packages
--- Source: packagesController.js
--- ------------------------------------------------------------
+
+
+
+
 CREATE TABLE IF NOT EXISTS Packages (
   id         INT            NOT NULL AUTO_INCREMENT,
   name       VARCHAR(255)   NOT NULL,
@@ -73,10 +73,10 @@ CREATE TABLE IF NOT EXISTS Packages (
   PRIMARY KEY (id)
 );
 
--- ------------------------------------------------------------
--- Table: CateringAssets
--- Source: assetsController.js
--- ------------------------------------------------------------
+
+
+
+
 CREATE TABLE IF NOT EXISTS CateringAssets (
   id       INT          NOT NULL AUTO_INCREMENT,
   name     VARCHAR(255) NOT NULL,
@@ -85,9 +85,9 @@ CREATE TABLE IF NOT EXISTS CateringAssets (
   PRIMARY KEY (id)
 );
 
--- ------------------------------------------------------------
--- Table: PackageAssets  (junction: which assets each package uses)
--- ------------------------------------------------------------
+
+
+
 CREATE TABLE IF NOT EXISTS PackageAssets (
   id           INT NOT NULL AUTO_INCREMENT,
   package_id   INT NOT NULL,
@@ -98,17 +98,17 @@ CREATE TABLE IF NOT EXISTS PackageAssets (
   FOREIGN KEY (asset_id)   REFERENCES CateringAssets(id) ON DELETE CASCADE
 );
 
--- ------------------------------------------------------------
--- Fix: ensure the notes column exists in Bookings
--- (safe to run even on existing databases)
--- ------------------------------------------------------------
+
+
+
+
 ALTER TABLE Bookings ADD COLUMN IF NOT EXISTS notes   TEXT;
 ALTER TABLE Bookings ADD COLUMN IF NOT EXISTS email   VARCHAR(255);
 ALTER TABLE Bookings ADD COLUMN IF NOT EXISTS guests  INT NOT NULL DEFAULT 0;
 
--- ------------------------------------------------------------
--- Table: Dishes  (available dishes the admin can assign to packages)
--- ------------------------------------------------------------
+
+
+
 CREATE TABLE IF NOT EXISTS Dishes (
   id       INT          NOT NULL AUTO_INCREMENT,
   name     VARCHAR(255) NOT NULL,
@@ -116,9 +116,9 @@ CREATE TABLE IF NOT EXISTS Dishes (
   PRIMARY KEY (id)
 );
 
--- ------------------------------------------------------------
--- Table: PackageDishes  (which dishes are included in a package)
--- ------------------------------------------------------------
+
+
+
 CREATE TABLE IF NOT EXISTS PackageDishes (
   id         INT NOT NULL AUTO_INCREMENT,
   package_id INT NOT NULL,
@@ -128,9 +128,9 @@ CREATE TABLE IF NOT EXISTS PackageDishes (
   FOREIGN KEY (dish_id)    REFERENCES Dishes(id)   ON DELETE CASCADE
 );
 
--- ------------------------------------------------------------
--- Table: PackageFreebies  (freebies / inclusions per package)
--- ------------------------------------------------------------
+
+
+
 CREATE TABLE IF NOT EXISTS PackageFreebies (
   id         INT          NOT NULL AUTO_INCREMENT,
   package_id INT          NOT NULL,
@@ -139,9 +139,9 @@ CREATE TABLE IF NOT EXISTS PackageFreebies (
   FOREIGN KEY (package_id) REFERENCES Packages(id) ON DELETE CASCADE
 );
 
--- ------------------------------------------------------------
--- Table: DishIngredients (ingredient inventory usage per dish per package)
--- ------------------------------------------------------------
+
+
+
 CREATE TABLE IF NOT EXISTS DishIngredients (
   id           INT NOT NULL AUTO_INCREMENT,
   dish_id       INT NOT NULL,
