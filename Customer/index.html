@@ -594,6 +594,12 @@ loadCustCalBookings();
 // Re-fetch every 2 minutes so new confirmed bookings appear without page reload
 setInterval(loadCustCalBookings, 2 * 60 * 1000);
 
+// Prevent choosing a past date in the booking form.
+const eventDateInput = document.getElementById('event-date');
+if (eventDateInput) {
+  eventDateInput.min = custCalTodayStr();
+}
+
 // ============================================================
 // FORM SUBMIT
 // ============================================================
@@ -614,6 +620,15 @@ document.getElementById('inquiryForm').addEventListener('submit', async (e) => {
     phone:      document.getElementById('phone').value,
     notes:      document.getElementById('notes').value
   };
+
+  if (data.eventDate && data.eventDate < custCalTodayStr()) {
+    const msgEl = document.getElementById('form-message');
+    msgEl.className = 'form-message error';
+    msgEl.textContent = 'Please select today or a future date.';
+    btn.disabled = false;
+    btn.querySelector('.btn-text').textContent = '\u2709 Send Booking Request';
+    return;
+  }
 
   try {
     const res = await fetch('http://localhost:3000/bookings', {

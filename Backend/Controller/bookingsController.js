@@ -37,20 +37,90 @@ exports.getBookingById = async (req, res) => {
 };
 
 exports.updateBookingStatus = async (req, res) => {
+  const conn = await pool.getConnection();
   try {
     const { status } = req.body;
     const validStatuses = ["pending", "confirmed", "completed", "cancelled"];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ error: "Invalid status. Use: pending, confirmed, completed, or cancelled" });
     }
-    const [result] = await pool.query(
+
+    await conn.beginTransaction();
+
+    const [bookingRows] = await conn.query(
+      "SELECT id, package, status, guests FROM Bookings WHERE id = ? FOR UPDATE",
+      [req.params.id]
+    );
+    if (!bookingRows.length) {
+      await conn.rollback();
+      return res.status(404).json({ error: "Booking not found" });
+    }
+
+    const booking = bookingRows[0];
+    const isTransitionToConfirmed = status === 'confirmed' && booking.status !== 'confirmed';
+
+    if (isTransitionToConfirmed) {
+      const [pkgRows] = await conn.query(
+        'SELECT id FROM Packages WHERE name = ? ORDER BY id DESC LIMIT 1',
+        [booking.package]
+      );
+
+      if (pkgRows.length) {
+        const pkg = pkgRows[0];
+
+        const [requiredRows] = await conn.query(
+          `SELECT di.inventory_id, i.name, i.quantity AS current_stock, CAST(SUM(di.qty_required) AS SIGNED) AS required_qty
+           FROM (
+             SELECT DISTINCT dish_id
+             FROM PackageDishes
+             WHERE package_id = ?
+           ) pd
+           JOIN DishIngredients di ON di.dish_id = pd.dish_id
+           JOIN Inventory i ON i.id = di.inventory_id
+           GROUP BY di.inventory_id, i.name, i.quantity`,
+          [pkg.id]
+        );
+
+        if (requiredRows.length) {
+          const insufficient = requiredRows.filter((r) => Number(r.current_stock) < Math.trunc(Number(r.required_qty)));
+          if (insufficient.length) {
+            await conn.rollback();
+            return res.status(400).json({
+              error: 'Insufficient ingredient stock for confirmation',
+              details: insufficient.map((i) => ({
+                ingredient: i.name,
+                required: Math.trunc(Number(i.required_qty)),
+                available: Math.trunc(Number(i.current_stock))
+              }))
+            });
+          }
+
+          for (const reqRow of requiredRows) {
+            const requiredQty = Math.trunc(Number(reqRow.required_qty));
+            await conn.query(
+              'UPDATE Inventory SET quantity = quantity - ? WHERE id = ?',
+              [requiredQty, reqRow.inventory_id]
+            );
+          }
+        }
+      }
+    }
+
+    await conn.query(
       "UPDATE Bookings SET status = ? WHERE id = ?",
       [status, req.params.id]
     );
-    if (result.affectedRows === 0) return res.status(404).json({ error: "Booking not found" });
-    res.json({ message: "Booking status updated" });
+
+    await conn.commit();
+    res.json({
+      message: "Booking status updated",
+      inventoryDeducted: isTransitionToConfirmed
+    });
   } catch (err) {
+    await conn.rollback();
     res.status(500).json({ error: err.message });
+  } finally {
+    conn.release();
   }
 };
 

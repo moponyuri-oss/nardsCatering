@@ -13,9 +13,14 @@ exports.createInventory = async (req, res) => {
   try {
     const { name, quantity, threshold } = req.body;
     if (!name) return res.status(400).json({ error: 'Name is required' });
+    const qty = Number(quantity ?? 0);
+    const th = Number(threshold ?? 0);
+    if (!Number.isInteger(qty) || qty < 0 || !Number.isInteger(th) || th < 0) {
+      return res.status(400).json({ error: 'Quantity and threshold must be whole numbers (0 or greater)' });
+    }
     const [result] = await pool.query(
       "INSERT INTO Inventory (name, quantity, threshold) VALUES (?, ?, ?)",
-      [name, quantity ?? 0, threshold ?? 0]
+      [name, qty, th]
     );
     res.status(201).json({ message: 'Inventory item created', inventoryId: result.insertId });
   } catch (err) {
@@ -36,9 +41,15 @@ exports.getInventoryById = async (req, res) => {
 exports.updateInventory = async (req, res) => {
   try {
     const { name, quantity, threshold } = req.body;
+    const qty = Number(quantity);
+    const th = Number(threshold);
+    if (!name) return res.status(400).json({ error: 'Name is required' });
+    if (!Number.isInteger(qty) || qty < 0 || !Number.isInteger(th) || th < 0) {
+      return res.status(400).json({ error: 'Quantity and threshold must be whole numbers (0 or greater)' });
+    }
     const [result] = await pool.query(
       "UPDATE Inventory SET name=?, quantity=?, threshold=? WHERE id=?",
-      [name, quantity, threshold, req.params.id]
+      [name, qty, th, req.params.id]
     );
     if (result.affectedRows === 0) return res.status(404).json({ error: 'Inventory item not found' });
     res.json({ message: 'Inventory updated' });

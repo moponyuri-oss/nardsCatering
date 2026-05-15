@@ -1,4 +1,12 @@
 // Example: Fetch and render menu items in Admin.html
+function showPopup(options) {
+  if (typeof Swal !== 'undefined') {
+    return Swal.fire(options);
+  }
+  console.warn('SweetAlert2 is not loaded. Popup message:', options.text || options.title || 'Notification');
+  return Promise.resolve();
+}
+
 async function fetchMenu() {
   try {
     const res = await fetch('http://localhost:5000/api/menu');
@@ -12,7 +20,11 @@ async function fetchMenu() {
       menuList.appendChild(li);
     });
   } catch (err) {
-    alert('Failed to load menu: ' + err.message);
+    await showPopup({
+      icon: 'error',
+      title: 'Failed to load menu',
+      text: err.message
+    });
   }
 }
 
@@ -25,10 +37,18 @@ async function addMenuItem(name, description, price) {
       body: JSON.stringify({ name, description, price })
     });
     const data = await res.json();
-    alert(data.message);
+    await showPopup({
+      icon: res.ok ? 'success' : 'error',
+      title: res.ok ? 'Success' : 'Request failed',
+      text: data.message || 'No message returned from server'
+    });
     fetchMenu(); // Refresh list
   } catch (err) {
-    alert('Failed to add menu item: ' + err.message);
+    await showPopup({
+      icon: 'error',
+      title: 'Failed to add menu item',
+      text: err.message
+    });
   }
 }
 

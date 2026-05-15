@@ -6,6 +6,7 @@
 <title>Nards Catering — Admin Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="Admin.css">
+<link rel="stylesheet" href="/node_modules/sweetalert2/dist/sweetalert2.min.css">
 </head>
 <body>
 
@@ -412,12 +413,12 @@
           <option>Beverages</option><option>Other</option>
         </select>
       </div>
-      <div class="form-group"><label>Current Stock *</label><input id="ing-stock" type="number" min="0" placeholder="50"></div>
+      <div class="form-group"><label>Current Stock *</label><input id="ing-stock" type="number" min="0" step="1" placeholder="50"></div>
       <div class="form-group"><label>Unit</label>
         <select id="ing-unit"><option>kg</option><option>g</option><option>L</option><option>mL</option><option>pcs</option><option>sacks</option><option>boxes</option><option>cans</option></select>
       </div>
-      <div class="form-group"><label>Minimum Required *</label><input id="ing-min" type="number" min="0" placeholder="10"></div>
-      <div class="form-group"><label>Good Stock Level</label><input id="ing-good" type="number" min="0" placeholder="50"></div>
+      <div class="form-group"><label>Minimum Required *</label><input id="ing-min" type="number" min="0" step="1" placeholder="10"></div>
+      <div class="form-group"><label>Good Stock Level</label><input id="ing-good" type="number" min="0" step="1" placeholder="50"></div>
     </div>
     <div class="modal-actions">
       <button class="btn btn-outline" onclick="closeModal('ingredient-modal')">Cancel</button>
@@ -535,6 +536,29 @@
   </div>
 </div>
 
+<!-- DISH INGREDIENTS MODAL -->
+<div class="modal-overlay" id="dish-ingredients-modal">
+  <div class="modal" style="width:640px;max-width:95vw">
+    <div class="modal-title">
+      <span id="dish-ing-modal-title">Dish Ingredients</span>
+      <button class="modal-close" onclick="closeModal('dish-ingredients-modal')">✕</button>
+    </div>
+    <p style="font-size:13px;color:var(--text-muted);margin:0 0 10px">
+      Set required ingredients per package. Inventory stock will be deducted when a booking is marked Confirmed.
+    </p>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <strong style="font-size:13px;color:var(--dark)">Ingredient Requirements</strong>
+      <button class="btn btn-outline btn-sm" type="button" onclick="addDishIngredientRow()">+ Add Ingredient</button>
+    </div>
+    <div id="dish-ing-container" style="max-height:260px;overflow-y:auto"></div>
+    <div id="dish-ing-empty" style="font-size:13px;color:var(--text-muted);padding:6px 0">No ingredients assigned.</div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('dish-ingredients-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveDishIngredients()">Save Ingredients</button>
+    </div>
+  </div>
+</div>
+
 <!-- CLIENT MODAL -->
 <div class="modal-overlay" id="client-modal">
   <div class="modal" style="width:480px">
@@ -565,7 +589,7 @@
     <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px">Adding stock to: <strong id="restock-name"></strong></p>
     <div class="form-group">
       <label>Add Quantity</label>
-      <input id="restock-qty" type="number" min="1" placeholder="Enter amount to add">
+      <input id="restock-qty" type="number" min="1" step="1" placeholder="Enter amount to add">
     </div>
     <div class="modal-actions">
       <button class="btn btn-outline" onclick="closeModal('restock-modal')">Cancel</button>
@@ -580,6 +604,7 @@
   <span id="notif-msg">Saved!</span>
 </div>
 
+<script src="/node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>
 <script>
 // ============================================================
 // EVENT NOTIFICATIONS — auto-popup on dashboard load
@@ -693,12 +718,39 @@ if (sessionStorage.getItem('nards_admin_auth') !== 'true') {
   window.location.href = '/login';
 }
 
-// FIX 2: Logout function — clears session and redirects
-function logout() {
-  if (confirm('Are you sure you want to log out?')) {
-    sessionStorage.removeItem('nards_admin_auth');
-    window.location.href = '/login';
+async function confirmAction(message, options = {}) {
+  const title = options.title || message;
+  if (typeof Swal === 'undefined') {
+    notify('Confirmation dialog is unavailable. Please reload the page.', '❌');
+    return false;
   }
+
+  const result = await Swal.fire({
+    title,
+    text: options.text || '',
+    icon: options.icon || 'warning',
+    showCancelButton: true,
+    confirmButtonText: options.confirmButtonText || 'Confirm',
+    cancelButtonText: options.cancelButtonText || 'Cancel',
+    confirmButtonColor: options.confirmButtonColor || '#b42318',
+    reverseButtons: true,
+    focusCancel: true
+  });
+
+  return result.isConfirmed;
+}
+
+// FIX 2: Logout function — clears session and redirects
+async function logout() {
+  const shouldLogout = await confirmAction('Are you sure you want to log out?', {
+    icon: 'question',
+    confirmButtonText: 'Log out',
+    confirmButtonColor: '#9a6f00'
+  });
+  if (!shouldLogout) return;
+
+  sessionStorage.removeItem('nards_admin_auth');
+  window.location.href = '/login';
 }
 
 // ============================================================
@@ -829,7 +881,7 @@ function navigate(view) {
   });
   if (view === 'dashboard') syncFromAPI().then(() => { renderDashboard(); loadEventNotifications(); });
   if (view === 'bookings')  syncFromAPI().then(() => renderBookings());
-  if (view === 'inventory') renderInventory();
+  if (view === 'inventory') syncInventoryFromAPI().then(() => renderInventory());
   if (view === 'menu')      renderMenuCards();
   if (view === 'calendar')  syncFromAPI().then(() => renderCalendar());
   if (view === 'assets')    renderAssets();
@@ -985,11 +1037,21 @@ async function saveBooking() {
         })
       });
       // Sync status separately via PATCH
-      await fetch(`${API}/bookings/${dbId}/status`, {
+      const statusRes = await fetch(`${API}/bookings/${dbId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: booking.status.toLowerCase() })
       });
+      if (!statusRes.ok) {
+        const err = await statusRes.json().catch(() => ({}));
+        let details = '';
+        if (Array.isArray(err.details) && err.details.length) {
+          details = '\n' + err.details.map(d => `${d.ingredient}: need ${d.required}, available ${d.available}`).join('\n');
+        }
+        notify((err.error || 'Failed to update booking status') + details, '⚠️');
+        return;
+      }
+      await syncInventoryFromAPI();
     } catch(e) {
       notify('Saved locally — server not connected', '⚠️');
     }
@@ -1017,30 +1079,60 @@ async function saveBooking() {
   }
 }
 
-function saveIngredient() {
+async function saveIngredient() {
   const name  = document.getElementById('ing-name').value.trim();
   const stock = document.getElementById('ing-stock').value;
   const min   = document.getElementById('ing-min').value;
   if (!name || stock === '' || min === '') { notify('Please fill required fields', '⚠️'); return; }
 
+  const stockInt = parseInt(stock, 10);
+  const minInt = parseInt(min, 10);
+  if (!Number.isInteger(stockInt) || stockInt < 0 || !Number.isInteger(minInt) || minInt < 0) {
+    notify('Ingredient stock and minimum must be whole numbers', '⚠️');
+    return;
+  }
+
   const ing = {
     id:       editIdx.ingredient >= 0 ? data.inventory[editIdx.ingredient].id : uid('ING'),
     name,
     category: document.getElementById('ing-cat').value,
-    stock:    parseFloat(stock),
+    stock:    stockInt,
     unit:     document.getElementById('ing-unit').value,
-    min:      parseFloat(min),
-    good:     parseFloat(document.getElementById('ing-good').value) || parseFloat(min) * 3,
+    min:      minInt,
+    good:     parseInt(document.getElementById('ing-good').value, 10) || minInt * 3,
     updated:  today()
   };
 
-  if (editIdx.ingredient >= 0) { data.inventory[editIdx.ingredient] = ing; }
-  else { data.inventory.push(ing); }
+  try {
+    const editing = editIdx.ingredient >= 0 ? data.inventory[editIdx.ingredient] : null;
+    const invId = editing ? Number(editing.id) : null;
+    const url = invId ? `${API}/inventory/${invId}` : `${API}/inventory`;
+    const method = invId ? 'PUT' : 'POST';
+    const res = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name,
+        quantity: stockInt,
+        threshold: minInt
+      })
+    });
 
-  saveData();
-  closeModal('ingredient-modal');
-  renderInventory();
-  notify('Ingredient saved!', '✅');
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      notify(err.error || 'Failed to save ingredient', '❌');
+      return;
+    }
+
+    if (editIdx.ingredient >= 0) data.inventory[editIdx.ingredient] = ing;
+    else data.inventory.push(ing);
+    await syncInventoryFromAPI();
+    closeModal('ingredient-modal');
+    renderInventory();
+    notify('Ingredient saved!', '✅');
+  } catch (e) {
+    notify('Server not connected', '❌');
+  }
 }
 
 async function saveMenu() {
@@ -1092,15 +1184,33 @@ function saveClient() {
   notify('Client added!', '✅');
 }
 
-function confirmRestock() {
-  const qty = parseFloat(document.getElementById('restock-qty').value);
-  if (!qty || qty <= 0) { notify('Enter valid quantity', '⚠️'); return; }
-  data.inventory[restockIdx].stock  += qty;
-  data.inventory[restockIdx].updated = today();
-  saveData();
-  closeModal('restock-modal');
-  renderInventory();
-  notify('Stock updated!', '✅');
+async function confirmRestock() {
+  const qty = parseInt(document.getElementById('restock-qty').value, 10);
+  if (!Number.isInteger(qty) || qty <= 0) { notify('Enter a whole number quantity', '⚠️'); return; }
+  const current = data.inventory[restockIdx];
+  const invId = Number(current.id);
+  if (!invId) { notify('Ingredient is not synced to server yet', '⚠️'); return; }
+  try {
+    const res = await fetch(`${API}/inventory/${invId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: current.name,
+        quantity: Number(current.stock) + qty,
+        threshold: Number(current.min) || 0
+      })
+    });
+    if (!res.ok) { notify('Failed to update stock', '❌'); return; }
+
+    current.stock += qty;
+    current.updated = today();
+    await syncInventoryFromAPI();
+    closeModal('restock-modal');
+    renderInventory();
+    notify('Stock updated!', '✅');
+  } catch (e) {
+    notify('Server not connected', '❌');
+  }
 }
 
 // ============================================================
@@ -1567,7 +1677,10 @@ function showConfirmation(booking) {
 // DELETE
 // ============================================================
 async function deleteBooking(idx) {
-  if (!confirm('Delete this booking?')) return;
+  if (!await confirmAction('Delete this booking?', {
+    text: 'This action cannot be undone.',
+    confirmButtonText: 'Delete'
+  })) return;
   const booking = data.bookings[idx];
   // If it came from the database, delete it there first so syncFromAPI won't bring it back
   if (booking.id && booking.id.startsWith('DB-')) {
@@ -1584,7 +1697,10 @@ async function deleteBooking(idx) {
   data.bookings.splice(idx, 1); saveData(); renderBookings(); notify('Booking deleted', '🗑️');
 }
 async function removeDashBooking(bookingId) {
-  if (!confirm('Remove this booking from Recent Bookings?')) return;
+  if (!await confirmAction('Remove this booking from Recent Bookings?', {
+    text: 'This action cannot be undone.',
+    confirmButtonText: 'Remove'
+  })) return;
   if (bookingId && bookingId.startsWith('DB-')) {
     if (!data.deletedBookingIds.includes(bookingId)) data.deletedBookingIds.push(bookingId);
     const dbId = bookingId.replace('DB-', '');
@@ -1593,12 +1709,30 @@ async function removeDashBooking(bookingId) {
   data.bookings = data.bookings.filter(b => b.id !== bookingId);
   saveData(); renderDashboard(); notify('Booking removed', '🗑️');
 }
-function deleteIngredient(idx) {
-  if (!confirm('Remove this ingredient?')) return;
-  data.inventory.splice(idx, 1); saveData(); renderInventory(); notify('Ingredient removed', '🗑️');
+async function deleteIngredient(idx) {
+  if (!await confirmAction('Remove this ingredient?', {
+    text: 'This action cannot be undone.',
+    confirmButtonText: 'Remove'
+  })) return;
+  const item = data.inventory[idx];
+  const invId = Number(item?.id);
+  if (!invId) { notify('Ingredient is not synced to server yet', '⚠️'); return; }
+  try {
+    const res = await fetch(`${API}/inventory/${invId}`, { method: 'DELETE' });
+    if (!res.ok) { notify('Failed to remove ingredient', '❌'); return; }
+    data.inventory.splice(idx, 1);
+    saveData();
+    renderInventory();
+    notify('Ingredient removed', '🗑️');
+  } catch (e) {
+    notify('Server not connected', '❌');
+  }
 }
 async function deleteMenu(id) {
-  if (!confirm('Delete this package?')) return;
+  if (!await confirmAction('Delete this package?', {
+    text: 'This action cannot be undone.',
+    confirmButtonText: 'Delete'
+  })) return;
   try {
     const res = await fetch(`${API}/packages/${id}`, { method: 'DELETE' });
     if (!res.ok) { notify('Failed to delete', '❌'); return; }
@@ -1609,7 +1743,10 @@ async function deleteMenu(id) {
   }
 }
 async function deleteClient(id) {
-  if (!confirm('Remove this client?')) return;
+  if (!await confirmAction('Remove this client?', {
+    text: 'Related local records may also be removed.',
+    confirmButtonText: 'Remove'
+  })) return;
   const client = data.clients.find(c => c.id === id);
   if (client) {
     const clientBookings = data.bookings.filter(b => b.client.toLowerCase() === client.name.toLowerCase());
@@ -1638,6 +1775,8 @@ let editPackageId = null;
 let packagesList  = [];
 let dishesList    = [];
 let editDishId    = null;
+let inventoryApiList = [];
+let editingDishIngredientsId = null;
 
 async function fetchAssets() {
   try {
@@ -1651,6 +1790,44 @@ async function fetchPackages() {
     const res = await fetch(`${API}/packages`);
     if (res.ok) packagesList = await res.json();
   } catch(e) { packagesList = []; }
+}
+
+async function syncInventoryFromAPI() {
+  try {
+    const res = await fetch(`${API}/inventory`);
+    if (!res.ok) return;
+    const rows = await res.json();
+
+    const byName = new Map(data.inventory.map(i => [String(i.name || '').toLowerCase(), i]));
+    data.inventory = rows.map(r => {
+      const matched = byName.get(String(r.name || '').toLowerCase()) || {};
+      const min = parseInt(r.threshold, 10) || 0;
+      return {
+        id: r.id,
+        name: r.name,
+        category: matched.category || 'Uncategorized',
+        stock: parseInt(r.quantity, 10) || 0,
+        unit: matched.unit || 'kg',
+        min,
+        good: parseInt(matched.good, 10) || Math.max(min * 3, 1),
+        updated: matched.updated || today()
+      };
+    });
+    saveData();
+  } catch (e) {
+    // server offline — keep local inventory
+  }
+}
+
+async function fetchInventoryList() {
+  try {
+    const res = await fetch(`${API}/inventory`);
+    if (res.ok) {
+      inventoryApiList = await res.json();
+      return;
+    }
+  } catch (e) {}
+  inventoryApiList = [];
 }
 
 async function renderAssets() {
@@ -1698,7 +1875,10 @@ async function saveAsset() {
 }
 
 async function deleteAsset(id) {
-  if (!confirm('Delete this asset?')) return;
+  if (!await confirmAction('Delete this asset?', {
+    text: 'This action cannot be undone.',
+    confirmButtonText: 'Delete'
+  })) return;
   try {
     const res = await fetch(`${API}/assets/${id}`, { method: 'DELETE' });
     if (!res.ok) { notify('Failed to delete', '❌'); return; }
@@ -1781,6 +1961,7 @@ async function renderDishes() {
         <td><strong>${d.name}</strong></td>
         <td><span class="badge badge-info" style="font-size:11px">${d.category}</span></td>
         <td><div style="display:flex;gap:6px">
+          <button class="btn btn-success btn-sm" onclick="openDishIngredientsModal(${d.id})">Ingredients</button>
           <button class="btn btn-outline btn-sm" onclick="openDishModal(${d.id})">Edit</button>
           <button class="btn btn-danger btn-sm" onclick="deleteDish(${d.id})">Del</button>
         </div></td>
@@ -1814,13 +1995,132 @@ async function saveDish() {
 }
 
 async function deleteDish(id) {
-  if (!confirm('Delete this dish? It will be removed from all packages.')) return;
+  if (!await confirmAction('Delete this dish?', {
+    text: 'It will be removed from all packages.',
+    confirmButtonText: 'Delete'
+  })) return;
   try {
     const res = await fetch(`${API}/dishes/${id}`, { method: 'DELETE' });
     if (!res.ok) { notify('Failed to delete', '❌'); return; }
     renderDishes();
     notify('Dish deleted', '🗑️');
   } catch(e) { notify('Server not connected', '❌'); }
+}
+
+function dishIngredientRowHtml(inventoryId, qtyRequired) {
+  const selected = Array.from(document.querySelectorAll('#dish-ing-container .dish-ing-select'))
+    .filter(s => s.value)
+    .map(s => Number(s.value));
+  const qtyDisplay = Math.max(1, Math.trunc(Number(qtyRequired) || 1));
+  const options = inventoryApiList.map(i => {
+    const isCurrent = Number(i.id) === Number(inventoryId);
+    const disabled = !isCurrent && selected.includes(Number(i.id));
+    const stockDisplay = Math.trunc(Number(i.quantity) || 0);
+    return `<option value="${i.id}" ${isCurrent ? 'selected' : ''} ${disabled ? 'disabled' : ''}>${i.name} (stock: ${stockDisplay})</option>`;
+  }).join('');
+
+  return `<div class="dish-ing-row" style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+    <select class="dish-ing-select" onchange="refreshDishIngredientDropdowns()" style="flex:1;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:#fff;color:var(--dark)">
+      <option value="">Select ingredient...</option>${options}
+    </select>
+    <input type="number" class="dish-ing-qty" min="1" step="1" value="${qtyDisplay}" oninput="this.value=Math.max(1,Math.trunc(Number(this.value)||1))" placeholder="Qty/pkg" style="width:95px;padding:8px;border:1px solid var(--border);border-radius:6px;font-size:13px;text-align:center">
+    <button type="button" class="btn btn-danger btn-sm" onclick="removeDishIngredientRow(this)" style="flex-shrink:0;padding:8px 10px">✕</button>
+  </div>`;
+}
+
+function refreshDishIngredientDropdowns() {
+  const selects = Array.from(document.querySelectorAll('#dish-ing-container .dish-ing-select'));
+  selects.forEach(sel => {
+    const selectedByOthers = selects
+      .filter(s => s !== sel && s.value)
+      .map(s => Number(s.value));
+
+    Array.from(sel.options).forEach(opt => {
+      if (!opt.value) return;
+      opt.disabled = selectedByOthers.includes(Number(opt.value));
+    });
+  });
+}
+
+function addDishIngredientRow(inventoryId, qtyRequired) {
+  if (!inventoryApiList.length) {
+    notify('Add ingredients first in Ingredient Inventory', '⚠️');
+    return;
+  }
+  document.getElementById('dish-ing-container').insertAdjacentHTML('beforeend', dishIngredientRowHtml(inventoryId, qtyRequired));
+  updateDishIngredientEmptyMsg();
+  refreshDishIngredientDropdowns();
+}
+
+function removeDishIngredientRow(btn) {
+  btn.closest('.dish-ing-row').remove();
+  updateDishIngredientEmptyMsg();
+  refreshDishIngredientDropdowns();
+}
+
+function updateDishIngredientEmptyMsg() {
+  const container = document.getElementById('dish-ing-container');
+  const empty = document.getElementById('dish-ing-empty');
+  if (empty) empty.style.display = container.children.length ? 'none' : 'block';
+}
+
+async function openDishIngredientsModal(dishId) {
+  editingDishIngredientsId = dishId;
+  const dish = dishesList.find(d => d.id === dishId);
+  document.getElementById('dish-ing-modal-title').textContent = `Ingredients for ${dish ? dish.name : 'Dish'}`;
+
+  document.getElementById('dish-ing-container').innerHTML = '';
+  await fetchInventoryList();
+
+  try {
+    const res = await fetch(`${API}/dishes/${dishId}/ingredients`);
+    if (!res.ok) throw new Error();
+    const payload = await res.json();
+    (payload.ingredients || []).forEach(i => addDishIngredientRow(i.inventory_id, i.qty_required));
+  } catch (e) {
+    notify('Could not load dish ingredients', '⚠️');
+  }
+
+  updateDishIngredientEmptyMsg();
+  openModal('dish-ingredients-modal');
+}
+
+async function saveDishIngredients() {
+  if (!editingDishIngredientsId) return;
+  const dishId = editingDishIngredientsId;
+  const rows = Array.from(document.querySelectorAll('#dish-ing-container .dish-ing-row'));
+  const ingredients = [];
+
+  for (const row of rows) {
+    const inventoryId = Number(row.querySelector('.dish-ing-select').value);
+    const qtyRequired = Number(row.querySelector('.dish-ing-qty').value);
+    if (!inventoryId) continue;
+    if (!Number.isInteger(qtyRequired) || qtyRequired <= 0) {
+      notify('Quantity per package must be a whole number greater than 0', '⚠️');
+      return;
+    }
+    ingredients.push({ inventory_id: inventoryId, qty_required: qtyRequired });
+  }
+
+  try {
+    const res = await fetch(`${API}/dishes/${editingDishIngredientsId}/ingredients`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ingredients })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      notify(err.error || 'Failed to save dish ingredients', '❌');
+      return;
+    }
+
+    closeModal('dish-ingredients-modal');
+    notify('Dish ingredients saved!', '✅');
+    // Re-open from server state so removed rows are guaranteed reflected after save.
+    await openDishIngredientsModal(dishId);
+  } catch (e) {
+    notify('Server not connected', '❌');
+  }
 }
 
 // ---- Dish rows inside the package modal ----
@@ -2025,7 +2325,11 @@ function calSelectDay(dateStr) {
 async function calMarkDone(idx) {
   const booking = data.bookings[idx];
   if (!booking) return;
-  if (!confirm(`Mark "${booking.client}" booking as Completed?`)) return;
+  if (!await confirmAction(`Mark "${booking.client}" booking as Completed?`, {
+    icon: 'question',
+    confirmButtonText: 'Mark Completed',
+    confirmButtonColor: '#0f766e'
+  })) return;
 
   // If DB booking, update via API
   if (booking.id && booking.id.startsWith('DB-')) {
@@ -2054,12 +2358,52 @@ async function calMarkDone(idx) {
   // Refresh calendar — calSelectedDate persists so detail panel re-renders
   renderCalendar();
 }
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function mapLegacyNotifyIcon(icon) {
+  const icons = {
+    '✅': 'success',
+    '\u2705': 'success',
+    '❌': 'error',
+    '⚠️': 'warning',
+    '🗑️': 'info'
+  };
+  return icons[icon] || 'info';
+}
+
 function notify(msg, icon) {
+  if (typeof Swal === 'undefined') {
+    const el = document.getElementById('notif');
+    document.getElementById('notif-msg').textContent  = msg;
+    document.getElementById('notif-icon').textContent = icon || '✅';
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2800);
+    return;
+  }
+
+  const safeHtml = escapeHtml(msg || '').replace(/\n/g, '<br>');
+  Swal.fire({
+    toast: true,
+    position: 'bottom-start',
+    icon: mapLegacyNotifyIcon(icon),
+    html: safeHtml,
+    showConfirmButton: false,
+    timer: 2800,
+    timerProgressBar: true
+  });
+
   const el = document.getElementById('notif');
   document.getElementById('notif-msg').textContent  = msg;
   document.getElementById('notif-icon').textContent = icon || '✅';
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 2800);
+  el.classList.remove('show');
 }
 
 // Close modal on overlay click
@@ -2072,7 +2416,7 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
 // ============================================================
 // INIT
 // ============================================================
-fetchPackages().then(() => syncFromAPI()).then(() => {
+fetchPackages().then(() => syncInventoryFromAPI()).then(() => syncFromAPI()).then(() => {
   renderDashboard();
   loadEventNotifications();
 });

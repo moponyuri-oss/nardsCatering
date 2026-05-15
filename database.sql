@@ -138,3 +138,17 @@ CREATE TABLE IF NOT EXISTS PackageFreebies (
   PRIMARY KEY (id),
   FOREIGN KEY (package_id) REFERENCES Packages(id) ON DELETE CASCADE
 );
+
+-- ------------------------------------------------------------
+-- Table: DishIngredients (ingredient inventory usage per dish per package)
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS DishIngredients (
+  id           INT NOT NULL AUTO_INCREMENT,
+  dish_id       INT NOT NULL,
+  inventory_id  INT NOT NULL,
+  qty_required  INT NOT NULL DEFAULT 1,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_dish_inventory (dish_id, inventory_id),
+  FOREIGN KEY (dish_id)      REFERENCES Dishes(id)    ON DELETE CASCADE,
+  FOREIGN KEY (inventory_id) REFERENCES Inventory(id) ON DELETE CASCADE
+);
